@@ -1,4 +1,3 @@
 #!/bin/sh
 
-rm confi*
-rm hydro.dat
+rm DNA.pdb

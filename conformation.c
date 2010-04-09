@@ -1,27 +1,35 @@
 #include "conformation.h"
 #include "global.h"
+#include "random.c"
 
-//User code.
-//Construction of each conformation
-struct confor mcmove(struct confor p)
+extern double r,R,theta,h;
+extern int ntotal;
+
+struct confor McMove(struct confor p)
+//A MC routine
 {
+	int o;
+	o = (int)(rand()*ntotal); //select one particles at random
+	p.beads[o].x = p.beads[o].x+(rand()-0.5)*delx;
+	p.beads[o].y = p.beads[o].y+(rand()-0.5)*dely;
+	p.beads[o].z = p.beads[o].z+(rand()-0.5)*delz;
 	return p; 
 }
 
-struct confor initconfor(double r,double R,double theta,double h,double N)
+struct confor InitialConfor()
 {
 	struct confor p;
 	int i,j;
-	for(i=0;i<N/2;i++)
+	for(i=0;i<ntotal/2;i++)
 	{
 		p.beads[i].x=R*cos(theta*pi*i/180);
 		p.beads[i].y=R*sin(theta*pi*i/180);
 		p.beads[i].z=h*i;
 		p.beads[i].r=r;
 	}
-	for(i=N/2;i<N;i++)
+	for(i=ntotal/2;i<ntotal;i++)
 	{
-		j=i-N/2;
+		j=i-ntotal/2;
 		p.beads[i].x=R*cos(theta*j*pi/180+180);
 		p.beads[i].y=R*sin(theta*j*pi/180+180);
 		p.beads[i].z=h*j;
@@ -30,14 +38,14 @@ struct confor initconfor(double r,double R,double theta,double h,double N)
 	return p;
 }
 
-void SavePDBFile(struct confor p,int N,char *filename)
+void SavePDBFile(struct confor p,char *filename)
 {
 	int i;
 	char s[5];
 	FILE *fp;
 	fp=fopen(filename,"w");
 	fprintf(fp,"REMARK   PDB file created by monte\n");
-	for(i=0;i<N;i++)
+	for(i=0;i<ntotal;i++)
 	{
 		fprintf(fp,"ATOM  ");
 		sprintf(s,"C%d",i+1);

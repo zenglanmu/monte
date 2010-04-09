@@ -17,14 +17,14 @@
 double temp,eta0 ,rm ,vbar, solden;
 char *title;	//limit 20 chars 
 char *filename;
-int nconf;	//max number of conformation.
+int nstep;	//times of MC steps.
 
 //user code,model data.
 //This is for the DNA
-int n;
+int ntotal;
 double r,R,theta,h;
 
-void userdata()
+void UserData()
 {
 	temp=293;
 	eta0=0.010;
@@ -32,24 +32,25 @@ void userdata()
 	vbar=0.710;
 	solden=1.0;
 	title="The DNA"	; 
-	filename="confi";
-	nconf=36;	//max number of conformation.
-	n=200;
+	filename="DNA.pdb";
+	nstep=100;	
+	ntotal=200;
 	r=3;R=10;theta=36;h=3.4;
 }
 
 int main(int argc, char** argv)
 {
 	int i,j;
-	userdata();
+	UserData();
 	struct confor conf;
-	conf=initconfor(r,R,theta,h,n);
-	writepdb(conf,n,"dnaint.pdb");
+	conf=InitialConfor();
+	for(i=0;i<nstep;i++) conf = McMove(conf);
+	SavePDBFile(conf,filename);
 		//Check overlap between spheres
 		int flag;
-		for(j=0;j<n;j++)
+		for(j=0;j<ntotal;j++)
 		{
-			flag=ls_overlap(conf,j,n);
+			flag=ls_overlap(conf,j,ntotal);
 			if(flag)
 			{
 				printf("overlap happens at conf.beads[\%d]\n",j);
