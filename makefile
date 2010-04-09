@@ -17,4 +17,4 @@ random.o: random.c random.h
 	$(CC) -c random.c
 
 clean:
-	-rm main.o conformation.o overlap.o
+	-rm *.o

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-rm DNA.pdb
+rm DNA.pdb monte
