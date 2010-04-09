@@ -13,5 +13,8 @@ conformation.o: conformation.c conformation.h global.h
 	$(CC) $(CFLAGS) -c conformation.c 
 overlap.o: overlap.c overlap.h global.h
 	$(CC) $(CFLAGS) -c overlap.c
+random.o: random.c random.h
+	$(CC) -c random.c
+
 clean:
 	-rm main.o conformation.o overlap.o

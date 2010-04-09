@@ -30,7 +30,7 @@ struct confor initconfor(double r,double R,double theta,double h,double N)
 	return p;
 }
 
-void writepdb(struct confor p,int N,char *filename)
+void SavePDBFile(struct confor p,int N,char *filename)
 {
 	int i;
 	char s[5];

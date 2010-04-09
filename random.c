@@ -31,7 +31,7 @@ inline unsigned int secure_rand_base()
   unsigned int num = 0;
   int read_ret = 0;
   if(!secure_inited) __init_secure();
-  while(!read_ret) read_ret = fread(, sizeof(unsigned int), 1, rand_file);
+  while(!read_ret) read_ret = fread(&num, sizeof(unsigned int), 1, rand_file);
   return num;
 }
 
@@ -43,7 +43,7 @@ inline unsigned int strong_rand_base()
   unsigned int num = 0;
   int read_ret = 0;
   if(!strong_inited) __init_strong();
-  while(!read_ret) read_ret = fread(, sizeof(unsigned int), 1, urand_file);
+  while(!read_ret) read_ret = fread(&num, sizeof(unsigned int), 1, urand_file);
   return num;
 }
 
@@ -88,3 +88,9 @@ unsigned int strong_rand_int(unsigned int x)
    */
   return ((unsigned int) (x * strong_rand_real())) % x;
 }
+
+double rand()
+{
+	return strong_rand_real();
+}
+	
