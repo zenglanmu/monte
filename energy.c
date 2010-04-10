@@ -1,5 +1,5 @@
-#include "energy.h"
 #include "global.h"
+#include "energy.h"
 
 extern int ntotal;
 
@@ -16,10 +16,10 @@ double LJ(struct confor p)
 			if(r>rmax)
 				E+=0;
 			else
-				E+=4*si*(pow((sigma/r),12)-pow((sigma/r),6));
+				E+=4*epsilon*(pow((sigma/r),12)-pow((sigma/r),6));
 		}	
 	}
-	retrun E;
+	return E;
 }
 double Energy(struct confor p)
 {

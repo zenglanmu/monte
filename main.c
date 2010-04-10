@@ -37,7 +37,7 @@ void UserData()
 	solden=1.0;
 	title="The DNA"	; 
 	filename="DNA.pdb";
-	nstep=10000;
+	nstep=100;
 	nreject=0;	
 	ntotal=200;
 	r=3;R=10;theta=36;h=3.4;
@@ -58,29 +58,30 @@ void AcceptConfor(struct confor *old,struct confor *new)
 	
 int main(int argc, char** argv)
 {
-	UserData();
-	
-	int i,flag;
+	int i;
 	double Eprev,Enew,u;
 	struct confor conf,newconf;
 
+	UserData();
+	
 	conf=InitialConfor();
-	SavePDBFile(conf,"DNAInitial");
+	SavePDBFile(conf,"DNAInitial.pdb");
 	
 	for(i=0;i<nstep;i++){
+		printf("run nstep times %d\n",i);
 		Eprev = Energy(conf);
 		newconf = McMove(conf);
-		if(ls_overlap(p,ntotal){
+		if(ls_overlap(newconf,ntotal)){
 			RejectConfor("overlap");
 			continue;
 			}
 		Enew = Energy(newconf);
 		if(Enew<Eprev){	//accept conformation.
-			AcceptConfor(conf,newconf);
+			AcceptConfor(&conf,&newconf);
 		} else {
 			u = rand();
 			if(u<exp(-(Enew-Eprev)/(kB*temp)))
-				AcceptConfor(conf,newconf);
+				AcceptConfor(&conf,&newconf);
 			else{
 				RejectConfor("Energy too high");
 				continue;
@@ -88,7 +89,7 @@ int main(int argc, char** argv)
 		}	
 	}
 
-	SavePDBFile(conf,"DNAFinal");
-	
+	SavePDBFile(conf,"DNAFinal.pdb");
+	printf("\naccept rate %f\n",(nstep-nreject)/(double)nstep);
 	return 0;
 }

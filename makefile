@@ -7,7 +7,7 @@ CFLAGS= -g -Wall
 #CFLAGS= -O3 -Wall
 
 monte: main.o conformation.o overlap.o random.o energy.o sample.o
-	$(CC) -o monte main.o conformation.o overlap.o -lm
+	$(CC) -o monte main.o conformation.o overlap.o random.o energy.o sample.o -lm
 main.o: main.c conformation.h overlap.h random.h energy.h global.h sample.h
 	$(CC) $(CFLAGS) -c main.c 
 conformation.o: conformation.c conformation.h global.h random.h
@@ -16,8 +16,8 @@ overlap.o: overlap.c overlap.h global.h
 	$(CC) $(CFLAGS) -c overlap.c
 random.o: random.c random.h
 	$(CC) -c random.c
-energy.o: energe.c energy.h global.h
-	$(CC) -c energe.c
+energy.o: energy.c energy.h global.h
+	$(CC) -c energy.c
 sample.o: sample.c sample.h global.h
 	$(CC) -c sample.c	
 

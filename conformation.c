@@ -1,6 +1,6 @@
 #include "conformation.h"
 #include "global.h"
-#include "random.c"
+#include "random.h"
 
 extern double r,R,theta,h;
 extern int ntotal;

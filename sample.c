@@ -1,5 +1,5 @@
-#include "energy.h"
+#include "global.h"
 #include "sample.h"
 
-void sample(struct confor *){
+void sample(struct confor p){
 }
