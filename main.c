@@ -39,7 +39,7 @@ void UserData()
 	filename="DNA.pdb";
 	nstep=100;
 	nreject=0;	
-	ntotal=200;
+	ntotal=1000;
 	r=3;R=10;theta=36;h=3.4;
 }
 
@@ -50,10 +50,10 @@ void RejectConfor(char *s)
 	nreject++;
 }
 
-void AcceptConfor(struct confor *old,struct confor *new)
+void AcceptConfor(struct confor *newconf,struct confor *conf)
 {
-	new=old;
-	sample(*new);
+	*conf=*newconf;		//Let old comformation = new comformation 
+	sample(*conf);
 }
 	
 int main(int argc, char** argv)
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 			}
 		Enew = Energy(newconf);
 		if(Enew<Eprev){	//accept conformation.
-			AcceptConfor(&conf,&newconf);
+			AcceptConfor(&newconf,&conf);
 		} else {
 			u = rand();
 			if(u<exp(-(Enew-Eprev)/(kB*temp)))

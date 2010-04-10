@@ -8,7 +8,7 @@ double LJ(struct confor p)
 {
 	int i,j;
 	double r,E,epsilon,sigma,rmax;
-	epsilon=0.3;sigma=1.8;rmax=7.2;
+	epsilon=0.3;sigma=1.8;rmax=5.2;
 	E=0;
 	for(i=0;i<ntotal;i++){
 		for(j=i;j<ntotal-1;j++){

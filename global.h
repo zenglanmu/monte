@@ -8,7 +8,7 @@
 
 #define pi 3.14159265358979
 #define kB 1.3806505E-23 //Boltzmann constant
-#define nmax 2000	//max number of beads a conformation could have.
+#define nmax 2000 //max number of beads a conformation could have.
 #define delx 1	//max size of MC move
 #define dely 1
 #define delz 1
