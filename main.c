@@ -39,7 +39,7 @@ void UserData()
 	filename="DNA.pdb";
 	nstep=100;
 	nreject=0;	
-	ntotal=1000;
+	ntotal=40;
 	r=3;R=10;theta=36;h=3.4;
 }
 
@@ -52,8 +52,9 @@ void RejectConfor(char *s)
 
 void AcceptConfor(struct confor *newconf,struct confor *conf)
 {
-	*conf=*newconf;		//Let old comformation = new comformation 
 	sample(*conf);
+	*conf=*newconf;		//Let old comformation = new comformation 
+
 }
 	
 int main(int argc, char** argv)
