@@ -8,10 +8,12 @@
 
 #define pi 3.14159265358979
 #define kB 1.3806505E-23 //Boltzmann constant
+#define H 100	//Hooken spring constant.
+#define Q 100 //Angel constant.
 #define nmax 200 //max number of beads a conformation could have.
-#define delx 1	//max size of MC move
-#define dely 1
-#define delz 1
+#define delx 0.5	//max size of MC move
+#define dely 0.5
+#define delz 0.5
 
 //define struct bead,x,y,z is cord,rad is radii.
 struct bead {

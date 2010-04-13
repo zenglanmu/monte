@@ -2,6 +2,18 @@
 #include "energy.h"
 
 extern int ntotal;
+extern int nspring;
+extern double temp;
+extern double Edist[nmax],Etheta[nmax];	//equilibrium spring lens and equilibrium angel.
+
+double EBond(struct confor p)
+//Bond potential.
+{
+	int i;
+	double E=0;
+	for(i=0;i<nspring;i++) 	E+=	kB*temp*H*pow((p.springs[i].len-Edist[i]),2);
+	return E;
+}
 
 double LJ(struct confor p)
 //Lennard-Jones potential
@@ -24,6 +36,6 @@ double LJ(struct confor p)
 double Energy(struct confor p)
 {
 	double Etotal;
-	Etotal=LJ(p);
+	Etotal=LJ(p)+EBond(p);
 	return Etotal;
 }

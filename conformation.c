@@ -4,6 +4,7 @@
 
 extern double r,R,theta,h;
 extern int ntotal,nspring;
+extern double Edist[nmax],Etheta[nmax];	//equilibrium spring lens and equilibrium angel.
 
 struct confor GetSpring(struct confor p)
 //calculate spring properties.
@@ -48,6 +49,7 @@ struct confor InitialConfor()
 {
 	struct confor p;
 	int i,j;
+	
 	for(i=0;i<ntotal/2;i++)
 	{
 		p.beads[i].x=R*cos(theta*pi*i/180);
@@ -63,7 +65,11 @@ struct confor InitialConfor()
 		p.beads[i].z=h*j;
 		p.beads[i].r=r;
 	}
+	
 	p = GetSpring(p);
+
+	for(i=0;i<nspring;i++) Edist[i]=p.springs[i].len;
+
 	return p;
 }
 

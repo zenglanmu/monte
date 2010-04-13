@@ -27,6 +27,7 @@ int nreject;
 //This is for the DNA
 int ntotal,nspring;
 double r,R,theta,h;
+double Edist[nmax],Etheta[nmax];	//equilibrium spring lens and equilibrium angel.
 
 void UserData()
 {
