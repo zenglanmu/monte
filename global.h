@@ -18,12 +18,15 @@ struct bead {
 	double x,y,z,r;
 } ;
 struct spring {
+	double x0,x1;
+	double y0,y1;
+	double z0,z1;
 	double len;
 };
 
 struct confor {
 	struct bead beads[nmax];
-	//struct spring springs[nmax-1];
+	struct spring springs[nmax];
 } ;
 
 #endif

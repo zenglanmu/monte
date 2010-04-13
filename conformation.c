@@ -3,7 +3,34 @@
 #include "random.h"
 
 extern double r,R,theta,h;
-extern int ntotal;
+extern int ntotal,nspring;
+
+struct confor GetSpring(struct confor p)
+//calculate spring properties.
+{
+	int i,j;
+	for(i=0;i<nspring/2;i++){
+		p.springs[i].x0=p.beads[i].x;
+		p.springs[i].y0=p.beads[i].y;
+		p.springs[i].z0=p.beads[i].z;
+		p.springs[i].x1=p.beads[i+1].x;
+		p.springs[i].y1=p.beads[i+1].y;
+		p.springs[i].z1=p.beads[i+1].z;
+		p.springs[i].len=sqrt(pow(((p.springs[i].x0)-(p.springs[i].x1)),2)+pow(((p.springs[i].y0)-(p.springs[i].y1)),2)+pow(((p.springs[i].z0)-(p.springs[i].z1)),2));
+	}
+	for(i=nspring/2;i<nspring;i++){
+		j=i+1;
+		p.springs[i].x0=p.beads[j].x;
+		p.springs[i].y0=p.beads[j].y;
+		p.springs[i].z0=p.beads[j].z;
+		p.springs[i].x1=p.beads[j+1].x;
+		p.springs[i].y1=p.beads[j+1].y;
+		p.springs[i].z1=p.beads[j+1].z;
+		p.springs[i].len=sqrt(pow(((p.springs[i].x0)-(p.springs[i].x1)),2)+pow(((p.springs[i].y0)-(p.springs[i].y1)),2)+pow(((p.springs[i].z0)-(p.springs[i].z1)),2));
+	}
+	return p;
+}
+
 
 struct confor McMove(struct confor p)
 //A MC routine
@@ -13,6 +40,7 @@ struct confor McMove(struct confor p)
 	p.beads[o].x = p.beads[o].x+(rand()-0.5)*delx;
 	p.beads[o].y = p.beads[o].y+(rand()-0.5)*dely;
 	p.beads[o].z = p.beads[o].z+(rand()-0.5)*delz;
+	p = GetSpring(p);
 	return p; 
 }
 
@@ -35,6 +63,7 @@ struct confor InitialConfor()
 		p.beads[i].z=h*j;
 		p.beads[i].r=r;
 	}
+	p = GetSpring(p);
 	return p;
 }
 

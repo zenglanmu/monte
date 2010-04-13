@@ -25,7 +25,7 @@ int nreject;
 
 //user code,model data.
 //This is for the DNA
-int ntotal;
+int ntotal,nspring;
 double r,R,theta,h;
 
 void UserData()
@@ -40,6 +40,7 @@ void UserData()
 	nstep=100;
 	nreject=0;	
 	ntotal=40;
+	nspring=ntotal-2;
 	r=3;R=10;theta=36;h=3.4;
 }
 
