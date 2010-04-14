@@ -1,10 +1,11 @@
 #include "global.h"
 #include "energy.h"
+#include "conformation.h"
 
 extern int ntotal;
-extern int nspring;
+extern int nspring,nang;
 extern double temp;
-extern double Edist[nmax],Etheta[nmax];	//equilibrium spring lens and equilibrium angel.
+extern double Edist[nmax],Eang[nmax];	//equilibrium spring lens and equilibrium angel.
 
 double EBond(struct confor p)
 //Bond potential.
@@ -14,7 +15,16 @@ double EBond(struct confor p)
 	for(i=0;i<nspring;i++) 	E+=	kB*temp*H*pow((p.springs[i].len-Edist[i]),2);
 	return E;
 }
-
+double EAng(struct confor p)
+//ang potential
+{
+	int i;
+	double E=0,ang[nmax];
+	GetAngel(p,ang);
+	for(i=0;i<nang;i++)	E+=	kB*temp*Q*pow((ang[i]-Eang[i]),2);
+	return E;
+}
+		
 double LJ(struct confor p)
 //Lennard-Jones potential
 {
@@ -36,6 +46,6 @@ double LJ(struct confor p)
 double Energy(struct confor p)
 {
 	double Etotal;
-	Etotal=LJ(p)+EBond(p);
+	Etotal=LJ(p)+EBond(p)+EAng(p);
 	return Etotal;
 }

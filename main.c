@@ -25,9 +25,9 @@ int nreject;
 
 //user code,model data.
 //This is for the DNA
-int ntotal,nspring;
+int ntotal,nspring,nang;
 double r,R,theta,h;
-double Edist[nmax],Etheta[nmax];	//equilibrium spring lens and equilibrium angel.
+double Edist[nmax],Eang[nmax];	//equilibrium spring lens and equilibrium angel.
 
 void UserData()
 {
@@ -42,6 +42,7 @@ void UserData()
 	nreject=0;	
 	ntotal=40;
 	nspring=ntotal-2;
+	nang=nspring-2;
 	r=3;R=10;theta=36;h=3.4;
 }
 

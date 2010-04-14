@@ -3,8 +3,8 @@
 #include "random.h"
 
 extern double r,R,theta,h;
-extern int ntotal,nspring;
-extern double Edist[nmax],Etheta[nmax];	//equilibrium spring lens and equilibrium angel.
+extern int ntotal,nspring,nang;
+extern double Edist[nmax],Eang[nmax];	//equilibrium spring lens and equilibrium angel.
 
 struct confor GetSpring(struct confor p)
 //calculate spring properties.
@@ -32,6 +32,26 @@ struct confor GetSpring(struct confor p)
 	return p;
 }
 
+void GetAngel(struct confor p,double *ang)
+{
+	int i,j;
+	double a,b,c;	//three side of the triangle.
+	for(i=0;i<nang/2;i++){
+		a=p.springs[i].len;
+		b=p.springs[i+1].len;
+		c=sqrt(pow(((p.springs[i].x0)-(p.springs[i+1].x1)),2)+pow(((p.springs[i].y0)-(p.springs[i+1].y1)),2)+pow(((p.springs[i].z0)-(p.springs[i+1].z1)),2));
+		*ang=(a*a+b*b-c*c)/(2*a*b);
+		ang++;
+	}
+	for(i=nang/2;i<nang;i++){
+		j=i+1;
+		a=p.springs[j].len;
+		b=p.springs[j+1].len;
+		c=sqrt(pow(((p.springs[j].x0)-(p.springs[j+1].x1)),2)+pow(((p.springs[j].y0)-(p.springs[j+1].y1)),2)+pow(((p.springs[j].z0)-(p.springs[j+1].z1)),2));
+		*ang=(a*a+b*b-c*c)/(2*a*b);
+		ang++;
+	}
+}
 
 struct confor McMove(struct confor p)
 //A MC routine
@@ -69,7 +89,7 @@ struct confor InitialConfor()
 	p = GetSpring(p);
 
 	for(i=0;i<nspring;i++) Edist[i]=p.springs[i].len;
-
+	GetAngel(p,Eang);
 	return p;
 }
 

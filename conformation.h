@@ -3,5 +3,6 @@
 #define CONFORMATION_H
 extern struct confor McMove(struct confor p);
 extern struct confor InitialConfor();
+extern void GetAngel(struct confor p,double *ang);
 extern void SavePDBFile(struct confor p,char *);
 #endif
