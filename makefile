@@ -2,7 +2,7 @@ all: monte
 
 CC = gcc
 #Options for development
-CFLAGS= -g -Wall 
+CFLAGS= -g -Wall  
 #Options for development
 #CFLAGS= -O3 -Wall
 

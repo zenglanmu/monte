@@ -14,6 +14,8 @@
 #define delx 0.5	//max size of MC move
 #define dely 0.5
 #define delz 0.5
+#define delalpha 1
+#define delbeta 1
 
 //define struct bead,x,y,z is cord,rad is radii.
 struct bead {

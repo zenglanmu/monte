@@ -53,8 +53,103 @@ void GetAngel(struct confor p,double *ang)
 	}
 }
 
-struct confor McMove(struct confor p)
-//A MC routine
+struct confor McMoveGlobal(struct confor p)
+{
+	int o,i,nhalf;
+	double alpha,Dalpha,beta,Dbeta,x,y,z,l;
+	nhalf=ntotal/2;
+	Dalpha=rand()*delalpha;
+	Dbeta=rand()*delbeta;
+	o = (int)(rand()*(nhalf-2))+1;	//we don't want tail and nail beads.
+
+	if((nhalf-o)>o){
+		for(i=0;i<o;i++){
+			x=p.beads[i].x-p.beads[o].x;
+			y=p.beads[i].y-p.beads[o].y;
+			z=p.beads[i].z-p.beads[o].z;
+			l=sqrt(x*x+y*y+z*z);
+			if(y<0) alpha=2*pi-acos(x/l);
+			else alpha=acos(x/l);	
+			beta=acos(z/l);
+
+			alpha+=Dalpha;
+			beta+=Dbeta;
+
+			x=l*cos(alpha);
+			y=l*sin(alpha);
+			z=l*cos(beta);
+
+			p.beads[i].x=p.beads[o].x+x;
+			p.beads[i].y=p.beads[o].y+y;
+			p.beads[i].z=p.beads[o].z+z;
+		}
+		for(i=nhalf;i<o+nhalf;i++){
+			x=p.beads[i].x-p.beads[o+nhalf].x;
+			y=p.beads[i].y-p.beads[o+nhalf].y;
+			z=p.beads[i].z-p.beads[o+nhalf].z;
+			l=sqrt(x*x+y*y+z*z);
+			if(y<0) alpha=2*pi-acos(x/l);
+			else alpha=acos(x/l);
+			beta=acos(z/l);
+
+			alpha+=Dalpha;
+			beta+=Dbeta;
+
+			x=l*cos(alpha);
+			y=l*sin(alpha);
+			z=l*cos(beta);
+
+			p.beads[i].x=p.beads[o+nhalf].x+x;
+			p.beads[i].y=p.beads[o+nhalf].y+y;
+			p.beads[i].z=p.beads[o+nhalf].z+z;
+		}
+	} else {
+		for(i=o+1;i<nhalf;i++){
+			x=p.beads[i].x-p.beads[o].x;
+			y=p.beads[i].y-p.beads[o].y;
+			z=p.beads[i].z-p.beads[o].z;
+			l=sqrt(x*x+y*y+z*z);
+			if(y<0) alpha=2*pi-acos(x/l);
+			else alpha=acos(x/l);
+			beta=acos(z/l);
+
+			alpha+=Dalpha;
+			beta+=Dbeta;
+
+			x=l*cos(alpha);
+			y=l*sin(alpha);
+			z=l*cos(beta);
+
+			p.beads[i].x=p.beads[o].x+x;
+			p.beads[i].y=p.beads[o].y+y;
+			p.beads[i].z=p.beads[o].z+z;
+		}
+		for(i=o+nhalf;i<ntotal;i++){
+			x=p.beads[i].x-p.beads[o+nhalf].x;
+			y=p.beads[i].y-p.beads[o+nhalf].y;
+			z=p.beads[i].z-p.beads[o+nhalf].z;
+			l=sqrt(x*x+y*y+z*z);
+			if(y<0) alpha=2*pi-acos(x/l);
+			else alpha=acos(x/l);
+			beta=acos(z/l);
+
+			alpha+=Dalpha;
+			beta+=Dbeta;
+
+			x=l*cos(alpha);
+			y=l*sin(alpha);
+			z=l*cos(beta);
+
+			p.beads[i].x=p.beads[o+nhalf].x+x;
+			p.beads[i].y=p.beads[o+nhalf].y+y;
+			p.beads[i].z=p.beads[o+nhalf].z+z;
+		}
+	}
+	p = GetSpring(p);
+	return p;
+}
+
+struct confor McMoveLocal(struct confor p)
 {
 	int o;
 	o = (int)(rand()*ntotal); //select one particles at random
@@ -63,6 +158,16 @@ struct confor McMove(struct confor p)
 	p.beads[o].z = p.beads[o].z+(rand()-0.5)*delz;
 	p = GetSpring(p);
 	return p; 
+}
+
+struct confor McMove(struct confor p)
+//A MC routine
+{
+	int i;
+	i=rand()*2;
+	if(i==0) p=McMoveLocal(p);
+	else p=McMoveGlobal(p);
+	return p;	
 }
 
 struct confor InitialConfor()

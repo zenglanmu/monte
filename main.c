@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 			AcceptConfor(&newconf,&conf);
 		} else {
 			u = rand();
-			if(u<exp(-(Enew-Eprev)/(kB*temp)))
+			if(1) /*u<exp(-(Enew-Eprev)/(kB*temp))*/
 				AcceptConfor(&conf,&newconf);
 			else{
 				RejectConfor("Energy too high");
