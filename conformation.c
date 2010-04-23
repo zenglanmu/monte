@@ -58,8 +58,8 @@ struct confor McMoveGlobal(struct confor p)
 	int o,i,nhalf;
 	double alpha,Dalpha,beta,Dbeta,x,y,z,l;
 	nhalf=ntotal/2;
-	Dalpha=rand()*delalpha;
-	Dbeta=rand()*delbeta;
+	Dalpha=(rand()-0.5)*delalpha;
+	Dbeta=(rand()-0.5)*delbeta;
 	o = (int)(rand()*(nhalf-2))+1;	//we don't want tail and nail beads.
 
 	if((nhalf-o)>o){
@@ -70,7 +70,8 @@ struct confor McMoveGlobal(struct confor p)
 			l=sqrt(x*x+y*y+z*z);
 			if(y<0) alpha=2*pi-acos(x/l);
 			else alpha=acos(x/l);	
-			beta=acos(z/l);
+			if(z<0) beta=2*pi-acos(z/l);
+			else beta=acos(z/l);
 
 			alpha+=Dalpha;
 			beta+=Dbeta;
@@ -90,7 +91,8 @@ struct confor McMoveGlobal(struct confor p)
 			l=sqrt(x*x+y*y+z*z);
 			if(y<0) alpha=2*pi-acos(x/l);
 			else alpha=acos(x/l);
-			beta=acos(z/l);
+			if(z<0) beta=2*pi-acos(z/l);
+			else beta=acos(z/l);
 
 			alpha+=Dalpha;
 			beta+=Dbeta;
@@ -111,7 +113,8 @@ struct confor McMoveGlobal(struct confor p)
 			l=sqrt(x*x+y*y+z*z);
 			if(y<0) alpha=2*pi-acos(x/l);
 			else alpha=acos(x/l);
-			beta=acos(z/l);
+			if(z<0) beta=2*pi-acos(z/l);
+			else beta=acos(z/l);
 
 			alpha+=Dalpha;
 			beta+=Dbeta;
@@ -131,7 +134,8 @@ struct confor McMoveGlobal(struct confor p)
 			l=sqrt(x*x+y*y+z*z);
 			if(y<0) alpha=2*pi-acos(x/l);
 			else alpha=acos(x/l);
-			beta=acos(z/l);
+			if(z<0) beta=2*pi-acos(z/l);
+			else beta=acos(z/l);
 
 			alpha+=Dalpha;
 			beta+=Dbeta;
@@ -166,7 +170,7 @@ struct confor McMove(struct confor p)
 	int i;
 	i=rand()*2;
 	if(i==0) p=McMoveLocal(p);
-	else p=McMoveGlobal(p);
+	else p=McMoveLocal(p);
 	return p;	
 }
 

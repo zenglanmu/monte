@@ -6,6 +6,7 @@ extern int ntotal;
 extern int nspring,nang;
 extern double temp;
 extern double Edist[nmax],Eang[nmax];	//equilibrium spring lens and equilibrium angel.
+extern struct confor InitialConf;
 
 double EBond(struct confor p)
 //Bond potential.
@@ -25,16 +26,16 @@ double EAng(struct confor p)
 	return E;
 }
 		
-double LJ(struct confor p)
+double EVpair(struct confor p)
 //Lennard-Jones potential
 {
 	int i,j;
 	double r,E,epsilon,sigma,rmax;
 	epsilon=0.3;sigma=1.8;rmax=7.2;
 	E=0;
-	for(i=0;i<ntotal;i++){
-		for(j=i;j<ntotal-1;j++){
-			r=sqrt(pow(((p.beads[j].x)-(p.beads[j+1].x)),2)+pow(((p.beads[j].y)-(p.beads[j+1].y)),2)+pow(((p.beads[j].z)-(p.beads[j+1].z)),2));
+	for(i=0;i<ntotal-1;i++){
+		for(j=i+1;j<ntotal;j++){
+			r=sqrt(pow(((p.beads[i].x)-(p.beads[j].x)),2)+pow(((p.beads[i].y)-(p.beads[j].y)),2)+pow(((p.beads[i].z)-(p.beads[j].z)),2));
 			if(r>rmax)
 				E+=0;
 			else
@@ -43,9 +44,31 @@ double LJ(struct confor p)
 	}
 	return E;
 }
+
+double CHpair(struct confor p)
+//Debye Huckel potential
+{
+	int i,j;
+	double r,E,nu,D,rD,kappa,l;
+	rD=3.07e-9;
+	kappa=1/rD;
+	nu=0.243;
+	D=80;
+	E=0;
+	for(i=0;i<ntotal-1;i++){
+		for(j=i+1;j<ntotal;j++){
+			r=sqrt(pow(((p.beads[i].x)-(p.beads[j].x)),2)+pow(((p.beads[i].y)-(p.beads[j].y)),2)+pow(((p.beads[i].z)-(p.beads[j].z)),2));
+			l=sqrt(pow(((InitialConf.beads[i].x)-(InitialConf.beads[j].x)),2)+pow(((InitialConf.beads[i].y)-(InitialConf.beads[j].y)),2)+pow(((InitialConf.beads[i].z)-(InitialConf.beads[j].z)),2));
+	
+			E+=nu*nu*l*l/D*exp(-kappa*r)/r;
+		}	
+	}
+	return E;
+}
+
 double Energy(struct confor p)
 {
 	double Etotal;
-	Etotal=LJ(p)+EBond(p)+EAng(p);
+	Etotal=EBond(p)+EAng(p)+EVpair(p)+CHpair(p);
 	return Etotal;
 }

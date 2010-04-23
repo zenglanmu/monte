@@ -16,8 +16,11 @@
 #include "sample.h"
 
 //user specific code,var for run.
-//double temp,eta0,rm,vbar,solden;
-double temp,eta0 ,rm ,vbar, solden;
+double temp;	//temperature,Kelvin.	
+double eta0;	//Solvent viscosity,poise;
+double rm;	//Molecular weight 
+double vbar;	//Partial specific volume of solute,g/cm3.
+double solden;	//Solution density, cm3/g. 
 char *title;	//limit 20 chars 
 char *filename;
 int nstep;	//times of MC steps.
@@ -28,6 +31,7 @@ int nreject;
 int ntotal,nspring,nang;
 double r,R,theta,h;
 double Edist[nmax],Eang[nmax];	//equilibrium spring lens and equilibrium angel.
+struct confor InitialConf;
 
 void UserData()
 {
@@ -40,7 +44,7 @@ void UserData()
 	filename="DNA.pdb";
 	nstep=100;
 	nreject=0;	
-	ntotal=40;
+	ntotal=100;
 	nspring=ntotal-2;
 	nang=nspring-2;
 	r=3;R=10;theta=36;h=3.4;
@@ -68,14 +72,14 @@ int main(int argc, char** argv)
 
 	UserData();
 	
-	conf=InitialConfor();
+	conf=InitialConf=InitialConfor();
 	SavePDBFile(conf,"DNAInitial.pdb");
 	
 	for(i=0;i<nstep;i++){
 		printf("run nstep times %d\n",i);
 		Eprev = Energy(conf);
 		newconf = McMove(conf);
-		if(ls_overlap(newconf,ntotal)){
+		if(ls_overlap(newconf,ntotal)){	/*ls_overlap(newconf,ntotal)*/
 			RejectConfor("overlap");
 			continue;
 			}
@@ -84,8 +88,8 @@ int main(int argc, char** argv)
 			AcceptConfor(&newconf,&conf);
 		} else {
 			u = rand();
-			if(1) /*u<exp(-(Enew-Eprev)/(kB*temp))*/
-				AcceptConfor(&conf,&newconf);
+			if(u<exp(-(Enew-Eprev)/(kB*temp))) /*u<exp(-(Enew-Eprev)/(kB*temp))*/
+				AcceptConfor(&newconf,&conf);
 			else{
 				RejectConfor("Energy too high");
 				continue;
