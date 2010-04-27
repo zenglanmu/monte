@@ -20,7 +20,12 @@ double temp;	//temperature,Kelvin.
 double eta0;	//Solvent viscosity,poise;
 double rm;	//Molecular weight 
 double vbar;	//Partial specific volume of solute,g/cm3.
-double solden;	//Solution density, cm3/g. 
+double solden;	//Solution density, cm3/g.
+double Dt;
+double ft;
+double Dr;
+double fr;
+
 char *title;	//limit 20 chars 
 char *filename;
 int nstep;	//times of MC steps.
@@ -40,10 +45,15 @@ void UserData()
 	rm=110000;
 	vbar=0.710;
 	solden=1.0;
+	Dt=0;ft=0;
+	Dr=0;fr=0;
+	
 	title="The DNA"	; 
 	filename="DNA.pdb";
+	
 	nstep=100;
-	nreject=0;	
+	nreject=0;
+	
 	ntotal=100;
 	nspring=ntotal-2;
 	nang=nspring-2;
@@ -59,9 +69,7 @@ void RejectConfor(char *s)
 
 void AcceptConfor(struct confor *newconf,struct confor *conf)
 {
-	sample(*conf);
 	*conf=*newconf;		//Let old comformation = new comformation 
-
 }
 	
 int main(int argc, char** argv)
@@ -80,12 +88,17 @@ int main(int argc, char** argv)
 	
 	for(i=0;i<nstep;i++){
 		printf("run nstep times %d\n",i);
+		
+		sample(&conf,i);
+		
 		Eprev = Energy(conf);
 		newconf = McMove(conf);
+		
 		if(ls_overlap(newconf,ntotal)){	/*ls_overlap(newconf,ntotal)*/
 			RejectConfor("overlap");
 			continue;
-			}
+		}
+		
 		Enew = Energy(newconf);
 		if(Enew<Eprev){	//accept conformation.
 			AcceptConfor(&newconf,&conf);
