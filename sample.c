@@ -65,7 +65,7 @@ MAT *GetBigB(struct confor *p)
 			else B = tensorT(i,j);
 			for(k=0;k<3;k++){
 				for(l=0;l<3;l++){
-					BigB->me[i+k][j+l] = B->me[k][l];
+					BigB->me[i*3+k][j*3+l] = B->me[k][l];
 				}
 			}
 		}
@@ -80,8 +80,9 @@ MAT *GetBigE(struct confor *p)
 	int i,j,k,l;
 	static MAT *C,*Ett,*Etr,*Err,*BigB,*BigC,*BigE,*Ui,*Uj;
 
-	static MAT *TEMP;
+	static MAT *TEMP,*TEMP1;
 	TEMP = m_get(3,3);
+	TEMP1 = m_get(3,3);
 	
 	C = m_get(3,3);
 	Ett = m_get(3,3);Etr = m_get(3,3);Err = m_get(3,3);
@@ -106,7 +107,7 @@ MAT *GetBigE(struct confor *p)
 		for(j=0;j<ntotal;j++){
 			for(k=0;k<3;k++){
 				for(l=0;l<3;l++){
-					C->me[k][l] = BigC->me[i+k][j+l];
+					C->me[k][l] = BigC->me[i*3+k][j*3+l];
 				}
 			}
 			Uj->me[0][1] = -p->beads[j].z;
@@ -122,8 +123,8 @@ MAT *GetBigE(struct confor *p)
 			m_add(TEMP,Etr,Etr);
 
 			m_mlt(Ui,C,TEMP);
-			m_mlt(TEMP,Uj,TEMP);
-			m_add(TEMP,Err,Err);
+			m_mlt(TEMP,Uj,TEMP1);
+			m_add(TEMP1,Err,Err);
 		}
 	}
 

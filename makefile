@@ -15,11 +15,11 @@ conformation.o: conformation.c conformation.h global.h random.h
 overlap.o: overlap.c overlap.h global.h
 	$(CC) $(CFLAGS) -c overlap.c
 random.o: random.c random.h
-	$(CC) -c random.c
+	$(CC) $(CFLAGS) -c random.c
 energy.o: energy.c energy.h global.h conformation.h
-	$(CC) -c energy.c
+	$(CC) $(CFLAGS) -c energy.c
 sample.o: sample.c sample.h global.h
-	$(CC) -c sample.c	
+	$(CC) $(CFLAGS) -c sample.c	
 
 clean:
 	-rm *.o
