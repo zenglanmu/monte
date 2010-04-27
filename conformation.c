@@ -197,8 +197,6 @@ struct confor InitialConfor()
 	
 	p = GetSpring(p);
 
-	for(i=0;i<nspring;i++) Edist[i]=p.springs[i].len;
-	GetAngel(p,Eang);
 	return p;
 }
 

@@ -36,7 +36,7 @@ struct confor InitialConf;
 void UserData()
 {
 	temp=293;
-	eta0=0.010;
+	eta0=0.0010;
 	rm=110000;
 	vbar=0.710;
 	solden=1.0;
@@ -73,6 +73,9 @@ int main(int argc, char** argv)
 	UserData();
 	
 	conf=InitialConf=InitialConfor();
+	for(i=0;i<nspring;i++) Edist[i]=InitialConf.springs[i].len;
+	GetAngel(InitialConf,Eang);
+	
 	SavePDBFile(conf,"DNAInitial.pdb");
 	
 	for(i=0;i<nstep;i++){

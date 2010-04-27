@@ -7,7 +7,7 @@ CFLAGS= -g -Wall
 #CFLAGS= -O3 -Wall
 
 monte: main.o conformation.o overlap.o random.o energy.o sample.o
-	$(CC) -o monte main.o conformation.o overlap.o random.o energy.o sample.o -lm
+	$(CC) -o monte main.o conformation.o overlap.o random.o energy.o sample.o mesch/meschach.a -lm
 main.o: main.c conformation.h overlap.h random.h energy.h global.h sample.h
 	$(CC) $(CFLAGS) -c main.c 
 conformation.o: conformation.c conformation.h global.h random.h
