@@ -21,10 +21,10 @@ double eta0;	//Solvent viscosity,poise;
 double rm;	//Molecular weight 
 double vbar;	//Partial specific volume of solute,g/cm3.
 double solden;	//Solution density, cm3/g.
-double Dt;
-double ft;
-double Dr;
-double fr;
+double Dt;	//translational diffusion coefficients.
+double ft;	//translational friction coefficients.
+double Dr;	//rotation diffusion coefficients.
+double fr;	//rotation friction coefficients.
 
 char *title;	//limit 20 chars 
 char *filename;
@@ -90,6 +90,7 @@ int main(int argc, char** argv)
 		printf("run nstep times %d\n",i);
 		
 		sample(&conf,i);
+		printf("Dt: %f,ft: %f,Dr: %f,fr: %f\n",Dt,ft,Dr,fr);
 		
 		Eprev = Energy(conf);
 		newconf = McMove(conf);

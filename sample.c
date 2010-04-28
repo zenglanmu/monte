@@ -9,10 +9,10 @@ extern double eta0;	//Solvent viscosity,poise;
 extern double rm;	//Molecular weight 
 extern double vbar;	//Partial specific volume of solute,g/cm3.
 extern double solden;	//Solution density, cm3/g.
-extern double Dt;
-extern double ft;
-extern double Dr;
-extern double fr;
+extern double Dt;	//translational diffusion coefficients.
+extern double ft;	//translational friction coefficients.
+extern double Dr;	//rotation diffusion coefficients.
+extern double fr;	//rotation friction coefficients.
 
 static MAT *I;
 void GetI()
@@ -43,11 +43,37 @@ double m_trace(MAT *D)
 	return trace;
 }
 
-MAT *tensorT(int i,int j)
+MAT *tensorT(struct confor *p,int i,int j)
+/*Rotne-Pager-Yamakawa tensor*/
 {
-	static MAT *T;
+	static MAT *T,*RR,*I3;
 	T = m_get(3,3);
-	T = m_copy(I,T);
+	RR = m_get(3,3);
+	I3 = m_get(3,3);
+	
+	double a,b,c,r;
+	a = p->beads[j].x-p->beads[i].x;
+	b = p->beads[j].y-p->beads[i].y;
+	c = p->beads[j].z-p->beads[i].z;
+	r = sqrt(a*a+b*b+c*c);
+
+	RR->me[0][0] = a*a/r;
+	RR->me[0][1] = a*b/r;
+	RR->me[0][2] = a*c/r;
+	RR->me[1][0] = b*a/r;
+	RR->me[1][1] = b*b/r;
+	RR->me[1][2] = b*c/r;
+	RR->me[2][0] = c*a/r;
+	RR->me[2][1] = c*b/r;
+	RR->me[2][2] = c*c/r;
+
+	sm_mlt(1/3.0,I,I3);
+	m_sub(I3,RR,T);
+	sm_mlt((p->beads[i].r*p->beads[i].r+p->beads[j].r*p->beads[j].r)/(r*r),T,T);
+	m_add(RR,T,T);
+	m_add(I,T,T);
+	T = sm_mlt(1/(8*pi*eta0*r),T,T);
+	 
 	return T;
 }
 
@@ -62,7 +88,7 @@ MAT *GetBigB(struct confor *p)
 	for(i=0;i<ntotal;i++){
 		for(j=0;j<ntotal;j++){
 			if(i==j) sm_mlt((1/(6*pi*eta0*p->beads[i].r)),I,B);
-			else B = tensorT(i,j);
+			else B = tensorT(p,i,j);
 			for(k=0;k<3;k++){
 				for(l=0;l<3;l++){
 					BigB->me[i*3+k][j*3+l] = B->me[k][l];
@@ -71,7 +97,6 @@ MAT *GetBigB(struct confor *p)
 		}
 	}
 	
-	M_FREE(B);
 	return BigB;
 }
 
@@ -152,13 +177,14 @@ MAT *GetBigE(struct confor *p)
 		}
 	}
 
-	m_output(BigE);
+	//m_output(BigE);
 	return BigE;
 }
 
 MAT *GetBigD(struct confor *p)
 {
 	static MAT *BigD;
+	BigD = m_get(3*ntotal,3*ntotal);
 	sm_mlt(kB*temp,GetBigE(p),BigD);
 	return BigD;
 }

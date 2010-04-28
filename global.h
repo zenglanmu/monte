@@ -10,7 +10,7 @@
 #define kB 1.3806505E-23 //Boltzmann constant
 #define H 100	//Hooken spring constant.
 #define Q 100 //Angel constant.
-#define nmax 2000 //max number of beads a conformation could have.
+#define nmax 500 //max number of beads a conformation could have.
 #define delx 0.5	//max size of MC move
 #define dely 0.5
 #define delz 0.5
