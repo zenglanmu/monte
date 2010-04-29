@@ -17,13 +17,18 @@ extern double fr;	//rotation friction coefficients.
 static MAT *I;
 void GetI()
 {
-	I = m_get(3,3);
-	int i,j;
-   	for(i=0;i<3;i++){
-		for(j=0;j<3;j++){
-			if(i==j) I->me[i][j] = 1;
-			else I->me[i][j] = 0;
+	static int is_malloc;	//we just need malloc one time.
+	
+	if(!is_malloc){
+		I = m_get(3,3);
+		int i,j;
+		for(i=0;i<3;i++){
+			for(j=0;j<3;j++){
+				if(i==j) I->me[i][j] = 1;
+				else I->me[i][j] = 0;
+			}
 		}
+		is_malloc = 1;
 	}
 }
 
@@ -47,9 +52,15 @@ MAT *tensorT(struct confor *p,int i,int j)
 /*Rotne-Pager-Yamakawa tensor*/
 {
 	static MAT *T,*RR,*I3;
-	T = m_get(3,3);
-	RR = m_get(3,3);
-	I3 = m_get(3,3);
+	static int is_malloc;
+	
+	if(!is_malloc){
+		T = m_get(3,3);
+		RR = m_get(3,3);
+		I3 = m_get(3,3); 
+		is_malloc = 1;
+	}
+	
 	
 	double a,b,c,r;
 	a = p->beads[j].x-p->beads[i].x;
@@ -81,10 +92,15 @@ MAT *GetBigB(struct confor *p)
 {
 	int i,j,k,l;
 	static MAT *BigB,*B;
+
+	static int is_malloc;
 	
-	B = m_get(3,3);
-	BigB = m_get(3*ntotal,3*ntotal);
-	
+	if(!is_malloc){
+		B = m_get(3,3);
+		BigB = m_get(3*ntotal,3*ntotal);
+		is_malloc = 1;
+	}
+
 	for(i=0;i<ntotal;i++){
 		for(j=0;j<ntotal;j++){
 			if(i==j) sm_mlt((1/(6*pi*eta0*p->beads[i].r)),I,B);
@@ -106,17 +122,27 @@ MAT *GetBigE(struct confor *p)
 	static MAT *C,*Ett,*Etr,*Err,*BigB,*BigC,*BigE,*Ui,*Uj;
 
 	static MAT *TEMP,*TEMP1;
-	TEMP = m_get(3,3);
-	TEMP1 = m_get(3,3);
+
+	static int is_malloc;
 	
-	C = m_get(3,3);
-	Ett = m_get(3,3);Etr = m_get(3,3);Err = m_get(3,3);
-	Ui = m_get(3,3);Uj = m_get(3,3);
+	if(!is_malloc){
+		TEMP = m_get(3,3);
+		TEMP1 = m_get(3,3);
+		C = m_get(3,3);
+		Ett = m_get(3,3);
+		Etr = m_get(3,3);
+		Err = m_get(3,3);
+		Ui = m_get(3,3);
+		Uj = m_get(3,3);
+		BigC = m_get(3*ntotal,3*ntotal);
+		BigE = m_get(6,6);
+		is_malloc = 1;
+	}
+	
+	
 	m_zero(Ett);m_zero(Etr);m_zero(Err);
 	m_zero(Ui);m_zero(Uj);
 	
-	BigC = m_get(3*ntotal,3*ntotal);
-	BigE = m_get(6,6);
 	BigB = GetBigB(p);
 	
 	m_inverse(BigB,BigC);
@@ -184,7 +210,13 @@ MAT *GetBigE(struct confor *p)
 MAT *GetBigD(struct confor *p)
 {
 	static MAT *BigD;
-	BigD = m_get(3*ntotal,3*ntotal);
+	static int is_malloc;
+
+	if(!is_malloc){
+		BigD = m_get(3*ntotal,3*ntotal);
+		is_malloc = 1;
+	}
+	
 	sm_mlt(kB*temp,GetBigE(p),BigD);
 	return BigD;
 }
@@ -204,8 +236,15 @@ void sample(struct confor *p,int n)
 	BigD = GetBigD(p);
 	
 	static MAT *Dtt,*Dtr,*Drr;
-	Dtt = m_get(3,3);Dtr = m_get(3,3);Drr = m_get(3,3);
+	static int is_malloc;
 
+	if(!is_malloc){
+		Dtt = m_get(3,3);
+		Dtr = m_get(3,3);
+		Drr = m_get(3,3);
+		is_malloc = 1;
+	}
+	
 	int k,l;
 	for(k=0;k<3;k++){
 		for(l=0;l<3;l++){
