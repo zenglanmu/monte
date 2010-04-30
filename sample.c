@@ -17,7 +17,7 @@ extern double fr;	//rotation friction coefficients.
 static MAT *I;
 void GetI()
 {
-	static int is_malloc;	//we just need malloc one time.
+	static int is_malloc = 0;	//we just need malloc one time.
 	
 	if(!is_malloc){
 		I = m_get(3,3);
@@ -48,11 +48,11 @@ double m_trace(MAT *D)
 	return trace;
 }
 
-MAT *tensorT(struct confor *p,int i,int j)
+MAT *tensorT(confor *p,int i,int j)
 /*Rotne-Pager-Yamakawa tensor*/
 {
 	static MAT *T,*RR,*I3;
-	static int is_malloc;
+	static int is_malloc = 0;
 	
 	if(!is_malloc){
 		T = m_get(3,3);
@@ -88,12 +88,12 @@ MAT *tensorT(struct confor *p,int i,int j)
 	return T;
 }
 
-MAT *GetBigB(struct confor *p)
+MAT *GetBigB(confor *p)
 {
 	int i,j,k,l;
 	static MAT *BigB,*B;
 
-	static int is_malloc;
+	static int is_malloc = 0;
 	
 	if(!is_malloc){
 		B = m_get(3,3);
@@ -116,14 +116,14 @@ MAT *GetBigB(struct confor *p)
 	return BigB;
 }
 
-MAT *GetBigE(struct confor *p)
+MAT *GetBigE(confor *p)
 {
 	int i,j,k,l;
 	static MAT *C,*Ett,*Etr,*Err,*BigB,*BigC,*BigE,*Ui,*Uj;
 
 	static MAT *TEMP,*TEMP1;
 
-	static int is_malloc;
+	static int is_malloc = 0;
 	
 	if(!is_malloc){
 		TEMP = m_get(3,3);
@@ -207,10 +207,10 @@ MAT *GetBigE(struct confor *p)
 	return BigE;
 }
 
-MAT *GetBigD(struct confor *p)
+MAT *GetBigD(confor *p)
 {
 	static MAT *BigD;
-	static int is_malloc;
+	static int is_malloc = 0;
 
 	if(!is_malloc){
 		BigD = m_get(3*ntotal,3*ntotal);
@@ -226,7 +226,7 @@ double add_average(double a,double sum,int n)
 	return (1/((double)(n+1))*(n*sum+a));
 }
 
-void sample(struct confor *p,int n)
+void sample(confor *p,int n)
 //n is MC steps when sampling
 {
 
@@ -236,7 +236,7 @@ void sample(struct confor *p,int n)
 	BigD = GetBigD(p);
 	
 	static MAT *Dtt,*Dtr,*Drr;
-	static int is_malloc;
+	static int is_malloc = 0;
 
 	if(!is_malloc){
 		Dtt = m_get(3,3);

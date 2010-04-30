@@ -1,8 +1,9 @@
 /*conformation.h*/
 #ifndef CONFORMATION_H
 #define CONFORMATION_H
-extern struct confor McMove(struct confor p);
-extern struct confor InitialConfor();
-extern void GetAngel(struct confor p,double *ang);
-extern void SavePDBFile(struct confor p,char *);
+extern void GetSpring(confor *p);
+extern void GetAngel(confor *p);
+extern void McMove(confor *old_p,confor *new_p);
+extern void InitialConfor(confor *p);
+extern void SavePDBFile(confor *p,char *filename);
 #endif

@@ -35,8 +35,8 @@ int nreject;
 //This is for the DNA
 int ntotal,nspring,nang;
 double r,R,theta,h;
-double Edist[nmax],Eang[nmax];	//equilibrium spring lens and equilibrium angel.
-struct confor InitialConf;
+double *Edist,*Eang;	//equilibrium spring lens and equilibrium angel.
+confor *InitialConf;
 
 void UserData()
 {
@@ -58,6 +58,68 @@ void UserData()
 	nspring=ntotal-2;
 	nang=nspring-2;
 	r=3;R=10;theta=36;h=3.4;
+
+	InitialConf = confor_get(ntotal,nspring,nang);
+	Edist = malloc(sizeof(double)*nspring);
+	Eang = malloc(sizeof(double)*nang);
+}
+
+confor *confor_get(int nbd,int nsp,int nang)
+//malloc a confor which have nbd beads
+//and nsp springs.
+{
+	confor *p;
+
+	p = malloc(sizeof(confor));
+	if (p == NULL) {
+		printf("out of memory\n");
+		exit(1);
+	}
+	p->nbd = nbd;
+	p->nsp = nsp;
+	p->nang = nang;
+	p->beads = malloc(sizeof(bead)*nbd);
+	p->springs = malloc(sizeof(spring)*nsp);
+	p->angs = malloc(sizeof(ang)*nang);
+
+	return p;
+}
+
+void confor_free(confor *p)
+//free a confor.
+{
+	free(p->beads);
+	free(p->springs);
+	free(p->angs);
+	free(p);
+}
+
+void confor_copy(confor *from,confor *to)
+//copy a confor to another confor.
+//both confors need to malloc first.
+{
+	int i;
+	if((from->nbd != to->nbd) || (from->nsp != to->nsp) || (from->nang != to->nang)){
+		printf("confors don't have equal size,can't copy!\n");
+		exit(1);
+	}
+	for(i=0;i < from->nbd;i++){
+		to->beads[i].x = from->beads[i].x;
+		to->beads[i].y = from->beads[i].y;
+		to->beads[i].z = from->beads[i].z;
+		to->beads[i].r = from->beads[i].r;
+	}
+	for(i=0;i < from->nsp;i++){
+		to->springs[i].start = from->springs[i].start;
+		to->springs[i].end = from->springs[i].end;
+		to->springs[i].len = from->springs[i].len;
+	}
+	for(i=0;i < from->nang;i++){
+		to->angs[i].start = from->angs[i].start;
+		to->angs[i].end = from->angs[i].end;
+		to->angs[i].angle = from->angs[i].angle;
+	}
+	
 }
 
 void RejectConfor(char *s)
@@ -67,46 +129,54 @@ void RejectConfor(char *s)
 	nreject++;
 }
 
-void AcceptConfor(struct confor *newconf,struct confor *conf)
+void AcceptConfor(confor *newconf,confor *conf)
 {
-	*conf=*newconf;		//Let old comformation = new comformation 
+	confor_copy(newconf,conf);	//Let old comformation = new comformation 
 }
 	
 int main(int argc, char** argv)
 {
 	int i;
 	double Eprev,Enew,u;
-	struct confor conf,newconf;
+	confor *conf,*newconf;
 
 	UserData();
 	
-	conf=InitialConf=InitialConfor();
-	for(i=0;i<nspring;i++) Edist[i]=InitialConf.springs[i].len;
-	GetAngel(InitialConf,Eang);
+	conf = confor_get(ntotal,nspring,nang);
+	newconf = confor_get(ntotal,nspring,nang);
+	
+	InitialConfor(InitialConf);
+	confor_copy(InitialConf,conf);
+
+	/*get equilibrium spring lens and equilibrium angel*/
+	for(i=0;i<nspring;i++)
+		Edist[i] = InitialConf->springs[i].len;
+	for(i=0;i<nang;i++)
+		Eang[i] = InitialConf->angs[i].angle;
 	
 	SavePDBFile(conf,"DNAInitial.pdb");
 	
 	for(i=0;i<nstep;i++){
 		printf("run nstep times %d\n",i);
 		
-		sample(&conf,i);
+		sample(conf,i);
 		printf("Dt: %f,ft: %f,Dr: %f,fr: %f\n",Dt,ft,Dr,fr);
 		
 		Eprev = Energy(conf);
-		newconf = McMove(conf);
+		McMove(conf,newconf);
 		
-		if(ls_overlap(newconf,ntotal)){	/*ls_overlap(newconf,ntotal)*/
+		if(ls_overlap(newconf)){	/*ls_overlap(newconf,ntotal)*/
 			RejectConfor("overlap");
 			continue;
 		}
 		
 		Enew = Energy(newconf);
 		if(Enew<Eprev){	//accept conformation.
-			AcceptConfor(&newconf,&conf);
+			AcceptConfor(newconf,conf);
 		} else {
 			u = rand();
 			if(u<exp(-(Enew-Eprev)/(kB*temp))) /*u<exp(-(Enew-Eprev)/(kB*temp))*/
-				AcceptConfor(&newconf,&conf);
+				AcceptConfor(newconf,conf);
 			else{
 				RejectConfor("Energy too high");
 				continue;

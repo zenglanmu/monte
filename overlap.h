@@ -1,5 +1,5 @@
 /*overlap.h*/
 #ifndef OVERLAP_H
 #define OVERLAP_H
-extern int ls_overlap(struct confor p,int n);
+extern int ls_overlap(confor *p);
 #endif

@@ -1,1 +1,4 @@
 mesch/
+*.o
+*.pdb
+monte

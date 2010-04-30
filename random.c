@@ -89,7 +89,7 @@ unsigned int strong_rand_int(unsigned int x)
   return ((unsigned int) (x * strong_rand_real())) % x;
 }
 
-double rand()
+double rnd()
 {
 	return strong_rand_real();
 }
