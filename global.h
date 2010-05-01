@@ -9,8 +9,8 @@
 
 #define pi 3.14159265358979
 #define kB 1.3806505E-23 //Boltzmann constant
-#define H 100	//Hooken spring constant.
-#define Q 100 //Angel constant.
+#define H 10	//Hooken spring constant.
+#define Q 10 //Angel constant.
 
 #define delx 0.5	//max size of MC move
 #define dely 0.5

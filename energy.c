@@ -92,6 +92,7 @@ double CHpair(confor *p)
 double Energy(confor *p)
 {
 	double Etotal;
-	Etotal=EBond(p)+EAng(p)+EVpair(p)+CHpair(p);
+	//Etotal = EBond(p)+EAng(p)+EVpair(p)+CHpair(p);
+	Etotal = EVpair(p)+CHpair(p);
 	return Etotal;
 }

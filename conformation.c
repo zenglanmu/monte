@@ -210,23 +210,6 @@ void InitialConfor(confor *p)
 
 }
 
-void SavePDBFile(confor *p,char *filename)
-{
-	int i;
-	char s[5];
-	FILE *fp;
-	fp=fopen(filename,"w");
-	fprintf(fp,"REMARK   PDB file created by monte\n");
-	for(i=0;i<ntotal;i++)
-	{
-		fprintf(fp,"ATOM  ");
-		sprintf(s,"C%d",i+1);
-		fprintf(fp,"%5d %-4.4s%c%3.3s %c%4d    ",i+1,"C"," "," ",'A',0);
-		fprintf(fp,"%8.3f%8.3f%8.3f",p->beads[i].x,-p->beads[i].y,-p->beads[i].z);
-		fprintf(fp,"  1.00%6.2f\n",0.0);
-	}
-	fprintf(fp,"END   \n");
-	fclose(fp);
-}
+
 
 

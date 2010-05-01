@@ -14,6 +14,7 @@
 #include "energy.h"
 #include "random.h"
 #include "sample.h"
+#include "io.h"
 
 //user specific code,var for run.
 double temp;	//temperature,Kelvin.	
@@ -54,7 +55,7 @@ void UserData()
 	nstep=100;
 	nreject=0;
 	
-	ntotal=100;
+	ntotal=1000;
 	nspring=ntotal-2;
 	nang=nspring-2;
 	r=3;R=10;theta=36;h=3.4;
@@ -147,6 +148,7 @@ int main(int argc, char** argv)
 	
 	InitialConfor(InitialConf);
 	confor_copy(InitialConf,conf);
+	confor_copy(InitialConf,newconf);
 
 	/*get equilibrium spring lens and equilibrium angel*/
 	for(i=0;i<nspring;i++)
@@ -165,17 +167,17 @@ int main(int argc, char** argv)
 		Eprev = Energy(conf);
 		McMove(conf,newconf);
 		
-		if(ls_overlap(newconf)){	/*ls_overlap(newconf,ntotal)*/
+		if(ls_overlap(newconf)){	
 			RejectConfor("overlap");
 			continue;
 		}
 		
 		Enew = Energy(newconf);
-		if(Enew<Eprev){	//accept conformation.
+		if(Enew <= Eprev){	//accept conformation.
 			AcceptConfor(newconf,conf);
 		} else {
 			u = rand();
-			if(u<exp(-(Enew-Eprev)/(kB*temp))) /*u<exp(-(Enew-Eprev)/(kB*temp))*/
+			if(u<exp(-(Enew-Eprev)/(kB*temp))) 
 				AcceptConfor(newconf,conf);
 			else{
 				RejectConfor("Energy too high");
