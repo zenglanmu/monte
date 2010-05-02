@@ -59,7 +59,7 @@ void GetAngel(confor *p)
 
 }
 
-void McMoveGlobal(confor *old_p,confor *new_p)
+void McMoveGlobal(const confor *old_p,confor *new_p)
 {
 	int o,i,nhalf;
 	double alpha,Dalpha,beta,Dbeta,x,y,z,l;
@@ -161,7 +161,7 @@ void McMoveGlobal(confor *old_p,confor *new_p)
 	
 }
 
-void McMoveLocal(confor *old_p,confor *new_p)
+void McMoveLocal(const confor *old_p,confor *new_p)
 /*local single bead move*/
 {
 	int o;
@@ -176,7 +176,7 @@ void McMoveLocal(confor *old_p,confor *new_p)
 	
 }
 
-void McMove(confor *old_p,confor *new_p)
+void McMove(const confor *old_p,confor *new_p)
 //A MC routine
 {
 	int i;

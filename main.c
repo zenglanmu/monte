@@ -52,10 +52,10 @@ void UserData()
 	title="The DNA"	; 
 	filename="DNA.pdb";
 	
-	nstep=100;
+	nstep=10;
 	nreject=0;
 	
-	ntotal=1000;
+	ntotal=6;
 	nspring=ntotal-2;
 	nang=nspring-2;
 	r=3;R=10;theta=36;h=3.4;

@@ -1,7 +1,7 @@
 #include "global.h"
 #include "overlap.h"
 
-int ls_overlap(confor *p)
+int ls_overlap(const confor *p)
 //Check overlap of bead i with all the other beads.
 //return 0 if there is no overlap
 //Otherwise, return 1

@@ -8,7 +8,7 @@ extern double temp;
 extern double *Edist,*Eang;	//equilibrium spring lens and equilibrium angel.
 extern confor *InitialConf;
 
-double EBond(confor *p)
+double EBond(const confor *p)
 //Bond potential.
 {
 	int i;
@@ -20,7 +20,7 @@ double EBond(confor *p)
 	return E;
 }
 
-double EAng(confor *p)
+double EAng(const confor *p)
 //ang potential
 {
 	int i;
@@ -32,7 +32,7 @@ double EAng(confor *p)
 	return E;
 }
 		
-double EVpair(confor *p)
+double EVpair(const confor *p)
 //Lennard-Jones potential
 {
 	int i,j;
@@ -58,7 +58,7 @@ double EVpair(confor *p)
 	return E;
 }
 
-double CHpair(confor *p)
+double CHpair(const confor *p)
 //Debye Huckel potential
 {
 	int i,j;
@@ -89,7 +89,7 @@ double CHpair(confor *p)
 	return E;
 }
 
-double Energy(confor *p)
+double Energy(const confor *p)
 {
 	double Etotal;
 	//Etotal = EBond(p)+EAng(p)+EVpair(p)+CHpair(p);

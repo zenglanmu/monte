@@ -32,7 +32,7 @@ void GetI()
 	}
 }
 
-double m_trace(MAT *D)
+double m_trace(const MAT *D)
 {
 	double trace=0;
 	int i,n;
@@ -48,7 +48,7 @@ double m_trace(MAT *D)
 	return trace;
 }
 
-MAT *tensorT(confor *p,int i,int j)
+MAT *tensorT(const confor *p,int i,int j)
 /*Rotne-Pager-Yamakawa tensor*/
 {
 	static MAT *T,*RR,*I3;
@@ -88,7 +88,7 @@ MAT *tensorT(confor *p,int i,int j)
 	return T;
 }
 
-MAT *GetBigB(confor *p)
+MAT *GetBigB(const confor *p)
 {
 	int i,j,k,l;
 	static MAT *BigB,*B;
@@ -116,7 +116,7 @@ MAT *GetBigB(confor *p)
 	return BigB;
 }
 
-MAT *GetBigE(confor *p)
+MAT *GetBigE(const confor *p)
 {
 	int i,j,k,l;
 	static MAT *C,*Ett,*Etr,*Err,*BigB,*BigC,*BigE,*Ui,*Uj;
@@ -203,21 +203,23 @@ MAT *GetBigE(confor *p)
 		}
 	}
 
-	//m_output(BigE);
+	
 	return BigE;
 }
 
-MAT *GetBigD(confor *p)
+MAT *GetBigD(const confor *p)
 {
-	static MAT *BigD;
+	static MAT *BigD,*TEMP;
 	static int is_malloc = 0;
 
 	if(!is_malloc){
-		BigD = m_get(3*ntotal,3*ntotal);
+		BigD = m_get(6,6);
+		TEMP = m_get(6,6);
 		is_malloc = 1;
 	}
-	
-	sm_mlt(kB*temp,GetBigE(p),BigD);
+
+	m_inverse(GetBigE(p),TEMP); 
+	sm_mlt(kB*temp,TEMP,BigD);
 	return BigD;
 }
 
@@ -226,7 +228,7 @@ double add_average(double a,double sum,int n)
 	return (1/((double)(n+1))*(n*sum+a));
 }
 
-void sample(confor *p,int n)
+void sample(const confor *p,int n)
 //n is MC steps when sampling
 {
 
@@ -234,6 +236,9 @@ void sample(confor *p,int n)
 	
 	static MAT *BigD;
 	BigD = GetBigD(p);
+
+	printf("Matrix BigD:\n");
+	m_output(BigD);
 	
 	static MAT *Dtt,*Dtr,*Drr;
 	static int is_malloc = 0;
@@ -254,12 +259,12 @@ void sample(confor *p,int n)
 		
 	for(k=0;k<3;k++){
 		for(l=0;l<3;l++){
-			Dtt->me[k][l] = BigD->me[k+3][l];
+			Dtr->me[k][l] = BigD->me[k+3][l];
 		}
 	}
 	for(k=0;k<3;k++){
 		for(l=0;l<3;l++){
-			Dtt->me[k][l] = BigD->me[k+3][l+3];
+			Drr->me[k][l] = BigD->me[k+3][l+3];
 		}
 	}
 
