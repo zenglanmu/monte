@@ -1,7 +1,9 @@
+#include "mesch/matrix.h"
+#include "mesch/matrix2.h"
 #include "global.h"
 #include "sample.h"
 
-#include	"mesch/matrix.h"
+
 
 extern int ntotal;
 extern double temp;	//temperature,Kelvin.	
@@ -13,6 +15,7 @@ extern double Dt;	//translational diffusion coefficients.
 extern double ft;	//translational friction coefficients.
 extern double Dr;	//rotation diffusion coefficients.
 extern double fr;	//rotation friction coefficients.
+extern double tao[5];	//Relaxation time.
 
 static MAT *I;
 void GetI()
@@ -140,8 +143,11 @@ MAT *GetBigE(const confor *p)
 	}
 	
 	
-	m_zero(Ett);m_zero(Etr);m_zero(Err);
-	m_zero(Ui);m_zero(Uj);
+	m_zero(Ett);
+	m_zero(Etr);
+	m_zero(Err);
+	m_zero(Ui);
+	m_zero(Uj);
 	
 	BigB = GetBigB(p);
 	
@@ -179,6 +185,12 @@ MAT *GetBigE(const confor *p)
 		}
 	}
 
+	/*we need some unit converts here*/
+	/*so we have SI units*/
+	sm_mlt(10E-10,Ett,Ett);
+	sm_mlt(10E-19,Etr,Etr);
+	sm_mlt(10E-28,Err,Err);
+	
 	for(k=0;k<3;k++){
 		for(l=0;l<3;l++){
 			BigE->me[k][l] = Ett->me[k][l];
@@ -268,14 +280,71 @@ void sample(const confor *p,int n)
 		}
 	}
 
-	double currDt = 1/3.0*m_trace(Dtt);	
+	/*we need some unit converts here*/
+	/*we convert m to cm*/
+	sm_mlt(10E4,Dtt,Dtt);
+	sm_mlt(10E2,Dtr,Dtr);
+	
+	double currDt = 1/3.0*m_trace(Dtt);
+	currDt = fabs(currDt);
 	Dt = add_average(currDt,Dt,n);
 	double currft = kB*temp/(currDt);
 	ft = add_average(currft,ft,n);
 
-	double currDr = 1/3.0*m_trace(Drr);	
+	double currDr = 1/3.0*m_trace(Drr);
+	currDr = fabs(currDr);
 	Dr = add_average(currDr,Dr,n);
 	double currfr = kB*temp/(currDr);
 	fr = add_average(currfr,fr,n);
-		
+
+	/*rotation relaxation time */
+	/*we need Drr's EIGENVALUES at first*/
+	static MAT *TT, *QQ;
+	static VEC *evals_re, *evals_im;
+	static int is_malloc1 = 0;
+
+	if(!is_malloc1){
+		QQ = m_get(Drr->m,Drr->n);
+		TT = m_get(Drr->m,Drr->n);
+		evals_re = v_get(Drr->m);
+		evals_im = v_get(Drr->m);
+		is_malloc = 1;
+	}
+
+	TT = m_copy(Drr,TT);
+
+	/* compute Schur form: Drr = QQ*TT*QQ^TT */
+	schur(TT,QQ);
+ 
+	/* extract eigenvalues */
+	schur_evals(TT,evals_re,evals_im);
+	/*We have gotten Drr's EIGENVALUES in evals_re*/
+
+  	double lamda1,lamda2,lamda3,delta;
+  	double currtao[5];
+  	lamda1 = evals_re->ve[0];
+  	lamda2 = evals_re->ve[1];
+  	lamda3 = evals_re->ve[2];
+  	delta = sqrt(lamda1*lamda1+lamda2*lamda2+lamda3*lamda3-
+		lamda1*lamda2-lamda1*lamda3-lamda2*lamda3);
+	currtao[0] = 1/(6*Dr - 2*delta);
+	currtao[0] = fabs(currtao[0]);
+	tao[0] = add_average(currtao[0],tao[0],n);
+	
+	currtao[1] = 1/(3*(Dr + lamda1));
+	currtao[1] = fabs(currtao[1]);
+	tao[1] = add_average(currtao[1],tao[1],n);
+
+	currtao[2] = 1/(3*(Dr + lamda2));
+	currtao[2] = fabs(currtao[2]);
+	tao[2] = add_average(currtao[2],tao[2],n);
+
+	currtao[3] = 1/(3*(Dr + lamda3));
+	currtao[3] = fabs(currtao[3]);
+	tao[3] = add_average(currtao[3],tao[3],n);
+
+	currtao[4] = 1/(6*Dr + 2*delta);
+	currtao[4] = fabs(currtao[4]);
+	tao[4] = add_average(currtao[4],tao[4],n);
+	
 }

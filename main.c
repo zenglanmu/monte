@@ -26,8 +26,9 @@ double Dt;	//translational diffusion coefficients.
 double ft;	//translational friction coefficients.
 double Dr;	//rotation diffusion coefficients.
 double fr;	//rotation friction coefficients.
+double tao[5] = {0,0,0,0,0};	//Relaxation time.
 
-char *title;	//limit 20 chars 
+char *title;	
 char *filename;
 int nstep;	//times of MC steps.
 int nreject;
@@ -42,7 +43,7 @@ confor *InitialConf;
 void UserData()
 {
 	temp=293;
-	eta0=0.0010;
+	eta0=0.010;
 	rm=110000;
 	vbar=0.710;
 	solden=1.0;
@@ -50,7 +51,7 @@ void UserData()
 	Dr=0;fr=0;
 	
 	title="The DNA"	; 
-	filename="DNA.pdb";
+	filename="DNA-results.txt";
 	
 	nstep=10;
 	nreject=0;
@@ -162,7 +163,7 @@ int main(int argc, char** argv)
 		printf("run nstep times %d\n",i);
 		
 		sample(conf,i);
-		printf("Dt: %f,ft: %f,Dr: %f,fr: %f\n",Dt,ft,Dr,fr);
+		results_output(stdout);
 		
 		Eprev = Energy(conf);
 		McMove(conf,newconf);
@@ -176,7 +177,7 @@ int main(int argc, char** argv)
 		if(Enew <= Eprev){	//accept conformation.
 			AcceptConfor(newconf,conf);
 		} else {
-			u = rand();
+			u = rnd();
 			if(u<exp(-(Enew-Eprev)/(kB*temp))) 
 				AcceptConfor(newconf,conf);
 			else{
@@ -188,5 +189,11 @@ int main(int argc, char** argv)
 
 	SavePDBFile(conf,"DNAFinal.pdb");
 	printf("\naccept rate %f\n",(nstep-nreject)/(double)nstep);
+
+	/*write results*/
+	FILE *fp;
+	fp=fopen(filename,"w");
+	results_output(fp);
+	fclose(fp);
 	return 0;
 }

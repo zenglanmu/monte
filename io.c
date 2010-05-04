@@ -1,6 +1,10 @@
 #include "global.h"
 #include "io.h"
 
+extern double Dt;	//translational diffusion coefficients.
+extern double Dr;	//rotation diffusion coefficients.
+extern double tao[5];	//Relaxation time.
+
 void SavePDBFile(const confor *p,char *filename)
 {
 	int i;
@@ -49,4 +53,17 @@ void confor_foutput(FILE *fp, const confor *p)
 	for(i=0;i < p->nang;i++)
 		fprintf(fp,"angs[%d]:ang = %-6.4f\n",i,p->angs[i].angle);		
 	
+}
+
+void results_output(FILE *fp)
+{
+	char *intro="-------------------------------------------------\nMONTE by zenglanmu@126.com\n-------------------------------------------------\n";
+
+	fprintf(fp,"%s",intro);			
+	fprintf(fp,"\nTranslational diffusion coefficient: %-6.4e cm2/s\n",Dt);
+	fprintf(fp,"\nRotational diffusion coefficient: %-6.4e s-1\n",Dr);
+
+	int i;
+	for(i = 0;i<5;i++)
+		fprintf(fp,"Relaxation time (%d): %-6.4e s\n",i+1,tao[i]);
 }

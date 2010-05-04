@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <strings.h>
+
 
 #define pi 3.14159265358979
-#define kB 1.3806505E-23 //Boltzmann constant
+#define kB 1.3806505E-23 //Boltzmann constant,m^2*kg*s^-2*K^-1
 #define H 10	//Hooken spring constant.
 #define Q 10 //Angel constant.
 
