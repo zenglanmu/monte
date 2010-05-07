@@ -61,6 +61,10 @@ void GetAngel(confor *p)
 
 void McMoveGlobal(const confor *old_p,confor *new_p)
 {
+	
+	const double delalpha = 1;
+	const double delbeta = 1;
+
 	int o,i,nhalf;
 	double alpha,Dalpha,beta,Dbeta,x,y,z,l;
 	nhalf=ntotal/2;
@@ -164,6 +168,9 @@ void McMoveGlobal(const confor *old_p,confor *new_p)
 void McMoveLocal(const confor *old_p,confor *new_p)
 /*local single bead move*/
 {
+	const double delx = 0.5;	//max size of MC move
+	const double dely = 0.5;
+	const double delz = 0.5;
 	int o;
 	o = (int)(rnd()*ntotal); //select one particles at random
 	

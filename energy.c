@@ -11,6 +11,7 @@ extern confor *InitialConf;
 double EBond(const confor *p)
 //Bond potential.
 {
+	const double H = 10;	//Hooken spring constant.
 	int i;
 	double E=0;
 	
@@ -23,6 +24,7 @@ double EBond(const confor *p)
 double EAng(const confor *p)
 //ang potential
 {
+	const double Q = 10; //Angel constant.
 	int i;
 	double E=0;
 	
