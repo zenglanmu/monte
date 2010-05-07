@@ -56,7 +56,7 @@ void UserData()
 	nstep=10;
 	nreject=0;
 	
-	ntotal=6;
+	ntotal=50;
 	nspring=ntotal-2;
 	nang=nspring-2;
 	r=3;R=10;theta=36;h=3.4;

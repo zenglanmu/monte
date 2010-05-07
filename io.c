@@ -1,27 +1,61 @@
+#include <string.h>
 #include "global.h"
 #include "io.h"
+#include "libpdb/pdb.h"
 
 extern double Dt;	//translational diffusion coefficients.
 extern double Dr;	//rotation diffusion coefficients.
 extern double tao[5];	//Relaxation time.
+extern double temp;	//temperature,Kelvin.
 
 void SavePDBFile(const confor *p,char *filename)
 {
 	int i;
-	char s[5];
+	pdb_record r;
+	pdb_residue s;
 	FILE *fp;
-	fp=fopen(filename,"w");
-	fprintf(fp,"REMARK   PDB file created by monte\n");
+	
+	fp = fopen(filename,"w");
+	r.record_type = PDB_ATOM;
 	for(i=0;i< p->nbd ;i++)
 	{
-		fprintf(fp,"ATOM  ");
-		sprintf(s,"C%d",i+1);
-		fprintf(fp,"%5d %-4.4s%c%3.3s %c%4d    ",i+1,"C"," "," ",'A',0);
-		fprintf(fp,"%8.3f%8.3f%8.3f",p->beads[i].x,-p->beads[i].y,-p->beads[i].z);
-		fprintf(fp,"  1.00%6.2f\n",0.0);
+		r.pdb.atom.serial_num = i;
+		strcpy(r.pdb.atom.name,"C");
+		r.pdb.atom.alt_loc = 0;
+		
+		strcpy(s.name,"C");
+		s.chain_id = 'A';
+		s.seq_num = i;
+		s.insert_code = 'A';
+		r.pdb.atom.residue = s;
+		
+		r.pdb.atom.x = p->beads[i].x;
+		r.pdb.atom.y = p->beads[i].y;
+		r.pdb.atom.z = p->beads[i].z;
+		r.pdb.atom.occupancy = p->beads[i].r;
+		
+		r.pdb.atom.temp_factor = temp;
+		pdb_write_record(fp,&r,NULL,i);
 	}
-	fprintf(fp,"END   \n");
 	fclose(fp);
+}
+
+void ReadPDBFILE(confor *p,char *filename)
+{
+	int i;
+	pdb_record r;
+	FILE *fp;
+	fp = fopen(filename,"r");
+	
+	for(i=0;i<p->nbd;i++){
+		r = pdb_read_record(fp);
+		if(r.record_type == PDB_ATOM){
+			p->beads[i].x = r.pdb.atom.x;
+			p->beads[i].y = r.pdb.atom.y;
+			p->beads[i].z = r.pdb.atom.z;
+			p->beads[i].r = r.pdb.atom.occupancy;
+		}
+	}
 }
 
 void confor_foutput(FILE *fp, const confor *p)

@@ -7,7 +7,7 @@ CFLAGS= -gdwarf-2 -g3 -Wall
 #CFLAGS= -O3 -Wall
 
 monte: main.o conformation.o overlap.o random.o energy.o sample.o io.o
-	$(CC) -o monte main.o conformation.o overlap.o random.o energy.o sample.o io.o  mesch/meschach.a -lm
+	$(CC) -o monte main.o conformation.o overlap.o random.o energy.o sample.o io.o libpdb/libpdb.a mesch/meschach.a -lm
 main.o: main.c conformation.h overlap.h random.h energy.h global.h sample.h io.h
 	$(CC) $(CFLAGS) -c main.c 
 conformation.o: conformation.c conformation.h global.h random.h
