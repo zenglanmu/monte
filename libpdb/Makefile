@@ -22,7 +22,7 @@ LINTLIB		= llib-l$(LIBRARY).ln
 OBJS		= pdb_read.o pdb_sprntf.o pdb_sscanf.o pdb_write.o pdbrun.o ms.o
 SRCS		= pdb_read.c pdb_sprntf.c pdb_sscanf.c pdb_write.c pdbrun.c ms.c
 
-all:		$(LIBARCH) $(LINTLIB)
+all:		$(LIBARCH) 
 
 install:	$(LIBARCH)
 		install -F /usr/local/lib $(LIBARCH)

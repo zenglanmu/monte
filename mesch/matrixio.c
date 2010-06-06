@@ -474,7 +474,7 @@ void    m_foutput(FILE *fp, const MAT *a)
 	  fprintf(fp,"row %u: ",i);
 	  for ( j=0, tmp=2; j<a->n; j++, tmp++ )
 	  {             /* for each col in row... */
-	       fprintf(fp,"  %-10.4e  ",a->me[i][j]);
+	       fprintf(fp,"  %14.4e  ",a->me[i][j]);
 	       //if ( ! (tmp % 5) )       putc('\n',fp);
 	  }
 	  if ( tmp % 5 != 1 )   putc('\n',fp);
