@@ -191,6 +191,16 @@ MAT *GetBigE(const confor *p)
 	sm_mlt(10E-19,Etr,Etr);
 	sm_mlt(10E-28,Err,Err);
 	
+	//Volume correction 
+	double Volume;
+	Volume = 0;
+	for(i=0;i<p->nbd;i++)
+		Volume += 4/3.0*pi*pow(p->beads[i].r,3);
+		
+	sm_mlt(6*eta0*Volume,I,TEMP);
+	sm_mlt(10E-28,TEMP,TEMP);
+	m_add(TEMP,Err,Err);
+	
 	for(k=0;k<3;k++){
 		for(l=0;l<3;l++){
 			BigE->me[k][l] = Ett->me[k][l];
@@ -215,6 +225,15 @@ MAT *GetBigE(const confor *p)
 		}
 	}
 
+	static MAT *Dtt;
+	static int is_malloc1 = 0;
+
+	if(!is_malloc1){
+		Dtt = m_get(3,3);
+		is_malloc1 = 1;
+	}
+	m_inverse(Ett,Dtt);
+	sm_mlt(kB*temp,Dtt,Dtt);
 	
 	return BigE;
 }

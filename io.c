@@ -42,18 +42,19 @@ void SavePDBFile(const confor *p,char *filename)
 
 void ReadPDBFILE(confor *p,char *filename)
 {
-	int i;
+	int i=0;
 	pdb_record r;
 	FILE *fp;
 	fp = fopen(filename,"r");
 	
-	for(i=0;i<p->nbd;i++){
+	while(i<p->nbd){
 		r = pdb_read_record(fp);
 		if(r.record_type == PDB_ATOM){
 			p->beads[i].x = r.pdb.atom.x;
 			p->beads[i].y = r.pdb.atom.y;
 			p->beads[i].z = r.pdb.atom.z;
 			p->beads[i].r = r.pdb.atom.occupancy;
+			i++;
 		}
 	}
 }
