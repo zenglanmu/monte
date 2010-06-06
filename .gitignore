@@ -1,6 +1,5 @@
-mesch/
-libpdb/
 *.o
 *.pdb
+*.a
 *results.txt
 monte
