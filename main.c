@@ -37,8 +37,6 @@ int nreject;
 //This is for the DNA
 int ntotal,nspring,nang;
 double r,R,theta,h;
-double *Edist,*Eang;	//equilibrium spring lens and equilibrium angel.
-confor *InitialConf;
 
 void UserData()
 {
@@ -61,9 +59,6 @@ void UserData()
 	nang=nspring-2;
 	r=3;R=10;theta=36;h=3.4;
 
-	InitialConf = confor_get(ntotal,nspring,nang);
-	Edist = malloc(sizeof(double)*nspring);
-	Eang = malloc(sizeof(double)*nang);
 }
 
 confor *confor_get(int nbd,int nsp,int nang)
@@ -147,15 +142,8 @@ int main(int argc, char** argv)
 	conf = confor_get(ntotal,nspring,nang);
 	newconf = confor_get(ntotal,nspring,nang);
 	
-	InitialConfor(InitialConf);
-	confor_copy(InitialConf,conf);
-	confor_copy(InitialConf,newconf);
-
-	/*get equilibrium spring lens and equilibrium angel*/
-	for(i=0;i<nspring;i++)
-		Edist[i] = InitialConf->springs[i].len;
-	for(i=0;i<nang;i++)
-		Eang[i] = InitialConf->angs[i].angle;
+	InitialConfor(conf);
+	confor_copy(conf,newconf);
 	
 	SavePDBFile(conf,"DNAInitial.pdb");
 	

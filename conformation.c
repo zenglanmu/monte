@@ -4,7 +4,6 @@
 
 extern double r,R,theta,h;
 extern int ntotal,nspring,nang;
-extern double *Edist,*Eang;	//equilibrium spring lens and equilibrium angle.
 
 void GetSpring(confor *p)
 //calculate spring properties.

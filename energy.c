@@ -5,18 +5,17 @@
 extern int ntotal;
 extern int nspring,nang;
 extern double temp;
-extern double *Edist,*Eang;	//equilibrium spring lens and equilibrium angel.
-extern confor *InitialConf;
 
 double EBond(const confor *p)
 //Bond potential.
 {
 	const double H = 10;	//Hooken spring constant.
+	const double l0 = 0.72; //equilibrium spring lens
 	int i;
 	double E=0;
 	
 	for(i=0;i<nspring;i++)
-		E += kB*temp*H*pow((p->springs[i].len-Edist[i]),2);
+		E += kB*temp*H*pow((p->springs[i].len-l0),2);
 		
 	return E;
 }
@@ -25,11 +24,12 @@ double EAng(const confor *p)
 //ang potential
 {
 	const double Q = 10; //Angel constant.
+	const double ang0 = 1; //equilibrium angle
 	int i;
 	double E=0;
 	
 	for(i=0;i<nang;i++)
-		E += kB*temp*Q*pow((p->angs[i].angle - Eang[i]),2);
+		E += kB*temp*Q*pow((p->angs[i].angle - ang0),2);
 		
 	return E;
 }
@@ -64,13 +64,14 @@ double CHpair(const confor *p)
 //Debye Huckel potential
 {
 	int i,j;
-	double r,E,nu,D,rD,kappa,l;
-	double x,y,z;
+
+	const double l=0.72; //equilibrium lens.
+	const double rD=3.07e-9;
+	const double kappa=1/rD;
+	const double nu=0.243;
+	const double D=80;
+	double x,y,z,r,E;
 	
-	rD=3.07e-9;
-	kappa=1/rD;
-	nu=0.243;
-	D=80;
 	E=0;
 	
 	for(i=0;i<ntotal-1;i++){
@@ -79,11 +80,6 @@ double CHpair(const confor *p)
 			y = p->beads[i].y - p->beads[j].y;
 			z = p->beads[i].z - p->beads[j].z;
 			r = sqrt(x*x+y*y+z*z);
-					
-			x = InitialConf->beads[i].x - InitialConf->beads[j].x;
-			y = InitialConf->beads[i].y - InitialConf->beads[j].y;
-			z = InitialConf->beads[i].z - InitialConf->beads[j].z;	
-			l = sqrt(x*x+y*y+z*z);
 			
 			E +=  nu*nu*l*l/D*exp(-kappa*r)/r;
 		}	
@@ -94,7 +90,6 @@ double CHpair(const confor *p)
 double Energy(const confor *p)
 {
 	double Etotal;
-	//Etotal = EBond(p)+EAng(p)+EVpair(p)+CHpair(p);
-	Etotal = EBond(p)+EAng(p);
+	Etotal = EBond(p)+EAng(p)+EVpair(p)+CHpair(p);
 	return Etotal;
 }
