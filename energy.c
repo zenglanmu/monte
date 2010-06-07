@@ -39,7 +39,7 @@ double EVpair(const confor *p)
 {
 	int i,j;
 	double r,E;
-	double epsilon=0.3,sigma=1.8,rmax=7.2;
+	double epsilon=0.3,sigma=3.2,rmax=7.2;
 	double x,y,z;
 	
 	E = 0;
@@ -65,11 +65,11 @@ double CHpair(const confor *p)
 {
 	int i,j;
 
-	const double l=0.72; //equilibrium lens.
+	const double l=0.072; //equilibrium lens.
 	const double rD=3.07e-9;
 	const double kappa=1/rD;
 	const double nu=0.243;
-	const double D=80;
+	const double D=800;
 	double x,y,z,r,E;
 	
 	E=0;

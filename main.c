@@ -54,7 +54,7 @@ void UserData()
 	
 	nstep=1000;
 	nreject=0;
-	acceptrate=50;
+	acceptrate=0.5;
 	
 	ntotal=50;
 	nspring=ntotal-2;
@@ -152,6 +152,8 @@ int main(int argc, char** argv)
 	for(i=0;i<=nstep;i++){
 		printf("run nstep times %d\n",i);
 		
+		//sample every 100 run.
+		//don't sample too often,or you would wait too long till stop.
 		if(!(i%100)){
 			sample(conf,i);
 			results_output(stdout);
