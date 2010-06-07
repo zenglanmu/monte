@@ -5,6 +5,8 @@
 extern double r,R,theta,h;
 extern int ntotal,nspring,nang;
 
+extern double acceptrate; //accept rate
+
 void GetSpring(confor *p)
 //calculate spring properties.
 //User supply code as your need.
@@ -167,11 +169,23 @@ void McMoveGlobal(const confor *old_p,confor *new_p)
 void McMoveLocal(const confor *old_p,confor *new_p)
 /*local single bead move*/
 {
-	const double delx = 0.5;	//max size of MC move
-	const double dely = 0.5;
-	const double delz = 0.5;
+	static double delx = 0.5;	//max size of MC move
+	static double dely = 0.5;
+	static double delz = 0.5;
 	int o;
 	o = (int)(rnd()*ntotal); //select one particles at random
+	
+	//dynamic adjust monte carlo step length,according to accept rate.
+	if(acceptrate>0.55){
+		delx = delx*1.2;
+		dely = dely*1.2;
+		delz = delz*1.2;
+	}
+	if(acceptrate<0.3){
+		delx = delx*0.8;
+		dely = dely*0.8;
+		delz = delz*0.8;
+	}
 	
 	new_p->beads[o].x = old_p->beads[o].x + (rnd()-0.5)*delx;
 	new_p->beads[o].y = old_p->beads[o].y + (rnd()-0.5)*dely;

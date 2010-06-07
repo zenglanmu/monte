@@ -31,7 +31,8 @@ double tao[5] = {0,0,0,0,0};	//Relaxation time.
 char *title;	
 char *filename;
 int nstep;	//times of MC steps.
-int nreject;
+int nreject; //reject times;
+double acceptrate; //accept rate
 
 //user code,model data.
 //This is for the DNA
@@ -51,8 +52,9 @@ void UserData()
 	title="The DNA"	; 
 	filename="DNA-results.txt";
 	
-	nstep=10;
+	nstep=1000;
 	nreject=0;
+	acceptrate=50;
 	
 	ntotal=50;
 	nspring=ntotal-2;
@@ -147,11 +149,15 @@ int main(int argc, char** argv)
 	
 	SavePDBFile(conf,"DNAInitial.pdb");
 	
-	for(i=0;i<nstep;i++){
+	for(i=0;i<=nstep;i++){
 		printf("run nstep times %d\n",i);
 		
-		sample(conf,i);
-		results_output(stdout);
+		if(!(i%100)){
+			sample(conf,i);
+			results_output(stdout);
+		}
+		
+		acceptrate = (i-nreject)/(double)i;	
 		
 		Eprev = Energy(conf);
 		McMove(conf,newconf);
@@ -172,13 +178,16 @@ int main(int argc, char** argv)
 				RejectConfor("Energy too high");
 				continue;
 			}
-		}	
+		}
+		
+		
 	}
 
 	SavePDBFile(conf,"DNAFinal.pdb");
-	printf("\naccept rate %f\n",(nstep-nreject)/(double)nstep);
+	printf("\naccept rate %f\n",acceptrate);
 
 	/*write results*/
+	results_output(stdout);
 	FILE *fp;
 	fp=fopen(filename,"w");
 	results_output(fp);
