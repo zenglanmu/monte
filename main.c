@@ -27,6 +27,9 @@ double ft;	//translational friction coefficients.
 double Dr;	//rotation diffusion coefficients.
 double fr;	//rotation friction coefficients.
 double tao[5] = {0,0,0,0,0};	//Relaxation time.
+double taoh;	//Harmonic mean (correlation) time.
+double Rg;	//Radius of gyration.
+double eta;	//Intrinsic viscosity.
 
 char *title;	
 char *filename;
@@ -35,9 +38,8 @@ int nreject; //reject times;
 double acceptrate; //accept rate
 
 //user code,model data.
-//This is for the DNA
 int ntotal,nspring,nang;
-double r,R,theta,h;
+
 
 void UserData()
 {
@@ -48,6 +50,11 @@ void UserData()
 	solden=1.0;
 	Dt=0;ft=0;
 	Dr=0;fr=0;
+	tao[5]=(0,0,0,0,0);
+	taoh =0;
+	Rg = 0;
+	eta = 0;
+
 	
 	title="The DNA"	; 
 	filename="DNA-results.txt";
@@ -59,8 +66,7 @@ void UserData()
 	ntotal=50;
 	nspring=ntotal-2;
 	nang=nspring-2;
-	r=3;R=10;theta=36;h=3.4;
-
+	
 }
 
 confor *confor_get(int nbd,int nsp,int nang)

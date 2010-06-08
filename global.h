@@ -9,6 +9,7 @@
 
 #define pi 3.14159265358979
 #define kB 1.3806505E-23 //Boltzmann constant,m^2*kg*s^-2*K^-1
+#define Avogadro 6.02E23 //Avogadro constant
 
 //define struct bead,x,y,z is cord,rad is radii.
 typedef struct  {

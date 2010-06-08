@@ -3,10 +3,14 @@
 #include "io.h"
 #include "libpdb/pdb.h"
 
+extern double temp;	//temperature,Kelvin.
 extern double Dt;	//translational diffusion coefficients.
 extern double Dr;	//rotation diffusion coefficients.
 extern double tao[5];	//Relaxation time.
-extern double temp;	//temperature,Kelvin.
+extern double taoh;	//Harmonic mean (correlation) time.
+extern double Rg;	//Radius of gyration.
+extern double eta;	//Intrinsic viscosity.
+
 
 void SavePDBFile(const confor *p,char *filename)
 {
@@ -101,4 +105,8 @@ void results_output(FILE *fp)
 	int i;
 	for(i = 0;i<5;i++)
 		fprintf(fp,"Relaxation time (%d): %-6.4e s\n",i+1,tao[i]);
+	
+	fprintf(fp,"Harmonic mean (correlation) time: %-6.4e s\n",taoh);	
+	fprintf(fp,"Radius of gyration: %-6.4e cm\n",Rg);	
+	fprintf(fp,"Intrinsic viscosity: %-6.4e cm^3/g\n",eta);
 }

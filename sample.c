@@ -16,6 +16,11 @@ extern double ft;	//translational friction coefficients.
 extern double Dr;	//rotation diffusion coefficients.
 extern double fr;	//rotation friction coefficients.
 extern double tao[5];	//Relaxation time.
+extern double Rg;	//Radius of gyration.
+extern double taoh;	//Harmonic mean (correlation) time.
+extern double eta;	//Intrinsic viscosity.
+
+double curreta;
 
 static MAT *I;
 void GetI()
@@ -31,6 +36,35 @@ void GetI()
 				else I->me[i][j] = 0;
 			}
 		}
+		is_malloc = 1;
+	}
+}
+
+static MAT *etaD;
+void GetetaD()
+{
+	static int is_malloc = 0;	//we just need malloc one time.
+	
+	if(!is_malloc){
+		etaD = m_get(3,3);
+		int i,j;
+		m_zero(etaD);
+		etaD->me[0][1] = 1;
+		is_malloc = 1;
+	}
+}
+
+static MAT *etaE;
+void GetetaE()
+{
+	static int is_malloc = 0;	//we just need malloc one time.
+	
+	if(!is_malloc){
+		etaE = m_get(3,3);
+		int i,j;
+		m_zero(etaE);
+		etaE->me[0][1] = 1;
+		etaE->me[1][0] = 1;
 		is_malloc = 1;
 	}
 }
@@ -152,6 +186,7 @@ MAT *GetBigE(const confor *p)
 	BigB = GetBigB(p);
 	
 	m_inverse(BigB,BigC);
+		
 	for(i=0;i<ntotal;i++){
 
 		Ui->me[0][1] = -p->beads[i].z;
@@ -201,6 +236,56 @@ MAT *GetBigE(const confor *p)
 	sm_mlt(10E-28,TEMP,TEMP);
 	m_add(TEMP,Err,Err);
 	
+	
+	//Intrinsic viscosity.Cij is needed when caculate it.
+	curreta = 0;
+	static MAT *riT, *rj,*tempvector,*tempvector1,*tempx;
+	static int is_malloc1 = 0;
+	if(!is_malloc1){
+		riT = m_get(1,3);
+		tempvector = m_get(1,3);
+		tempvector1 = m_get(1,3);
+		rj = m_get(3,1);
+		tempx = m_get(1,1);
+		is_malloc1 = 1;
+	}
+	
+	for(i=0;i<ntotal;i++){
+		//may have problem here.rotation center O?
+		riT->me[0][0] = p->beads[i].x;
+		riT->me[0][1] = p->beads[i].y;
+		riT->me[0][2] = p->beads[i].z;
+		
+		for(j=0;j<ntotal;j++){
+			rj->me[0][0] = p->beads[j].x;
+			rj->me[1][0] = p->beads[j].y;
+			rj->me[2][0] = p->beads[j].z;
+			m_mlt(riT,etaD,tempvector);
+
+			for(k=0;k<3;k++){
+				for(l=0;l<3;l++){
+					C->me[k][l] = BigC->me[i*3+k][j*3+l];
+				}
+			}
+
+			m_mlt(tempvector,C,tempvector1);
+			m_mlt(tempvector1,etaE,tempvector);
+			m_mlt(tempvector,rj,tempx);
+			
+			curreta += tempx->me[0][0];
+		}
+	}
+	
+	curreta = Avogadro/(2.0*rm)*curreta;
+	
+	//Volume correction
+	curreta += 5*Avogadro*Volume/(2.0*rm);
+	
+	/*we need some unit converts here*/
+	/*convert nm to cm*/
+	curreta = curreta*1E-21;
+	
+	
 	for(k=0;k<3;k++){
 		for(l=0;l<3;l++){
 			BigE->me[k][l] = Ett->me[k][l];
@@ -226,11 +311,11 @@ MAT *GetBigE(const confor *p)
 	}
 
 	static MAT *Dtt;
-	static int is_malloc1 = 0;
+	static int is_malloc2 = 0;
 
-	if(!is_malloc1){
+	if(!is_malloc2){
 		Dtt = m_get(3,3);
-		is_malloc1 = 1;
+		is_malloc2 = 1;
 	}
 	m_inverse(Ett,Dtt);
 	sm_mlt(kB*temp,Dtt,Dtt);
@@ -264,6 +349,8 @@ void sample(const confor *p,int n)
 {
 
 	GetI();	//Initial I
+	GetetaD();	//Initial etaD
+	GetetaE();	//Initial etaE
 	
 	static MAT *BigD;
 	BigD = GetBigD(p);
@@ -366,4 +453,47 @@ void sample(const confor *p,int n)
 	currtao[4] = fabs(currtao[4]);
 	tao[4] = add_average(currtao[4],tao[4],n);
 	
+	double currtaoh = 0; 
+	int i,j;
+	for(i = 0;i<5;i++) currtaoh += 1/currtao[i];
+	currtaoh = 1/currtaoh;
+	taoh = add_average(currtaoh,taoh,n);
+		
+	//Radius of gyration:
+	double currRg = 0;
+	double fi,fj;
+	double a,b,c,r; 
+	double RadiusSum=0;
+	for(i=0;i<ntotal;i++) RadiusSum += pow(p->beads[i].r,3);
+	for(i=0;i<ntotal;i++){
+		fi = pow(p->beads[i].r,3)/RadiusSum;
+		for(j=0;j<ntotal;j++){
+			fj = pow(p->beads[j].r,3)/RadiusSum;
+			a = p->beads[j].x-p->beads[i].x;
+			b = p->beads[j].y-p->beads[i].y;
+			c = p->beads[j].z-p->beads[i].z;
+			r = sqrt(a*a+b*b+c*c);
+			
+			currRg += fi*fj*r*r;
+		}
+	}	
+	
+	currRg = currRg/2.0;
+	
+	//Volume correction for radius of gyration.
+	double Si;
+	for(i=0;i<ntotal;i++){
+		fi = pow(p->beads[i].r,3)/RadiusSum;
+		Si = 3*p->beads[i].x*p->beads[i].x/5.0;
+		currRg += fi*Si; 
+	}
+	
+	currRg = sqrt(currRg);
+	/*we need some unit converts here*/
+	/*we convert nm to cm*/
+	currRg = 1e-7*currRg;
+	Rg = add_average(currRg,Rg,n);
+	
+	//Intrinsic viscosity.Monte Carlo average.
+	eta = add_average(curreta,eta,n);
 }

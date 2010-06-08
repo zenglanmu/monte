@@ -207,6 +207,10 @@ void McMove(const confor *old_p,confor *new_p)
 
 void InitialConfor(confor *p)
 {
+	//This is for the DNA
+	double r,R,theta,h;
+	r=3;R=10;theta=36;h=3.4;
+
 	int i,j;
 	
 	for(i=0;i<ntotal/2;i++)
