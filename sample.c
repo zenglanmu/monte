@@ -20,7 +20,7 @@ extern double Rg;	//Radius of gyration.
 extern double taoh;	//Harmonic mean (correlation) time.
 extern double eta;	//Intrinsic viscosity.
 
-double curreta;
+MAT *BigC; //make global here to caculate Intrinsic viscosity.
 
 static MAT *I;
 void GetI()
@@ -156,7 +156,7 @@ MAT *GetBigB(const confor *p)
 MAT *GetBigE(const confor *p)
 {
 	int i,j,k,l;
-	static MAT *C,*Ett,*Etr,*Err,*BigB,*BigC,*BigE,*Ui,*Uj;
+	static MAT *C,*Ett,*Etr,*Err,*BigB,*BigE,*Ui,*Uj;
 
 	static MAT *TEMP,*TEMP1;
 
@@ -235,55 +235,6 @@ MAT *GetBigE(const confor *p)
 	sm_mlt(6*eta0*Volume,I,TEMP);
 	sm_mlt(10E-28,TEMP,TEMP);
 	m_add(TEMP,Err,Err);
-	
-	
-	//Intrinsic viscosity.Cij is needed when caculate it.
-	curreta = 0;
-	static MAT *riT, *rj,*tempvector,*tempvector1,*tempx;
-	static int is_malloc1 = 0;
-	if(!is_malloc1){
-		riT = m_get(1,3);
-		tempvector = m_get(1,3);
-		tempvector1 = m_get(1,3);
-		rj = m_get(3,1);
-		tempx = m_get(1,1);
-		is_malloc1 = 1;
-	}
-	
-	for(i=0;i<ntotal;i++){
-		//may have problem here.rotation center O?
-		riT->me[0][0] = p->beads[i].x;
-		riT->me[0][1] = p->beads[i].y;
-		riT->me[0][2] = p->beads[i].z;
-		
-		for(j=0;j<ntotal;j++){
-			rj->me[0][0] = p->beads[j].x;
-			rj->me[1][0] = p->beads[j].y;
-			rj->me[2][0] = p->beads[j].z;
-			m_mlt(riT,etaD,tempvector);
-
-			for(k=0;k<3;k++){
-				for(l=0;l<3;l++){
-					C->me[k][l] = BigC->me[i*3+k][j*3+l];
-				}
-			}
-
-			m_mlt(tempvector,C,tempvector1);
-			m_mlt(tempvector1,etaE,tempvector);
-			m_mlt(tempvector,rj,tempx);
-			
-			curreta += tempx->me[0][0];
-		}
-	}
-	
-	curreta = Avogadro/(2.0*rm)*curreta;
-	
-	//Volume correction
-	curreta += 5*Avogadro*Volume/(2.0*rm);
-	
-	/*we need some unit converts here*/
-	/*convert nm to cm*/
-	curreta = curreta*1E-21;
 	
 	
 	for(k=0;k<3;k++){
@@ -493,6 +444,58 @@ void sample(const confor *p,int n)
 	/*we convert nm to cm*/
 	currRg = 1e-7*currRg;
 	Rg = add_average(currRg,Rg,n);
+	
+	//Intrinsic viscosity.Cij is needed when caculate it.
+	double curreta = 0;
+	static MAT *riT, *rj,*tempvector,*tempvector1,*tempx,*C;
+	static int is_malloc2 = 0;
+	if(!is_malloc2){
+		riT = m_get(1,3);
+		tempvector = m_get(1,3);
+		tempvector1 = m_get(1,3);
+		rj = m_get(3,1);
+		tempx = m_get(1,1);
+		C = m_get(3,3);
+		is_malloc2 = 1;
+	}
+	
+	for(i=0;i<ntotal;i++){
+		//may have problem here.rotation center O?
+		riT->me[0][0] = p->beads[i].x;
+		riT->me[0][1] = p->beads[i].y;
+		riT->me[0][2] = p->beads[i].z;
+		
+		for(j=0;j<ntotal;j++){
+			rj->me[0][0] = p->beads[j].x;
+			rj->me[1][0] = p->beads[j].y;
+			rj->me[2][0] = p->beads[j].z;
+			m_mlt(riT,etaD,tempvector);
+
+			for(k=0;k<3;k++){
+				for(l=0;l<3;l++){
+					C->me[k][l] = BigC->me[i*3+k][j*3+l];
+				}
+			}
+
+			m_mlt(tempvector,C,tempvector1);
+			m_mlt(tempvector1,etaE,tempvector);
+			m_mlt(tempvector,rj,tempx);
+			
+			curreta += tempx->me[0][0];
+		}
+	}
+	
+	curreta = Avogadro/(2.0*rm)*curreta;
+	
+	//Volume correction
+	double Volume = 0;
+	for(i=0;i<p->nbd;i++)
+		Volume += 4/3.0*pi*pow(p->beads[i].r,3);
+	curreta += 5*Avogadro*Volume/(2.0*rm);
+	
+	/*we need some unit converts here*/
+	/*convert nm to cm*/
+	curreta = curreta*1E-21;
 	
 	//Intrinsic viscosity.Monte Carlo average.
 	eta = add_average(curreta,eta,n);
