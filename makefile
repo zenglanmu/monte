@@ -2,9 +2,9 @@ all: monte
 
 CC = gcc
 #Options for development
- CFLAGS= -gdwarf-2 -g3 -Wall  
+# CFLAGS= -gdwarf-2 -g3 -Wall  
 #Options for development
-#CFLAGS= -O3 -Wall
+CFLAGS= -O3 -Wall
 
 monte: main.o conformation.o overlap.o random.o energy.o sample.o io.o libpdb/libpdb.a mesch/meschach.a 
 	$(CC) -o monte main.o conformation.o overlap.o random.o energy.o sample.o io.o libpdb/libpdb.a mesch/meschach.a -lm

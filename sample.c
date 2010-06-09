@@ -459,16 +459,20 @@ void sample(const confor *p,int n)
 		is_malloc2 = 1;
 	}
 	
+	double o[3];	//rotation center O.
+	o[0] = 0;
+	o[1] = 0;
+	o[2] = 0;
 	for(i=0;i<ntotal;i++){
 		//may have problem here.rotation center O?
-		riT->me[0][0] = p->beads[i].x;
-		riT->me[0][1] = p->beads[i].y;
-		riT->me[0][2] = p->beads[i].z;
+		riT->me[0][0] = p->beads[i].x - o[0];
+		riT->me[0][1] = p->beads[i].y - o[0];
+		riT->me[0][2] = p->beads[i].z - o[0];
 		
 		for(j=0;j<ntotal;j++){
-			rj->me[0][0] = p->beads[j].x;
-			rj->me[1][0] = p->beads[j].y;
-			rj->me[2][0] = p->beads[j].z;
+			rj->me[0][0] = p->beads[j].x - o[0];
+			rj->me[1][0] = p->beads[j].y - o[0];
+			rj->me[2][0] = p->beads[j].z - o[0];
 			m_mlt(riT,etaD,tempvector);
 
 			for(k=0;k<3;k++){
